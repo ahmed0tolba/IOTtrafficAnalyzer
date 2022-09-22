@@ -1,0 +1,627 @@
+<html>
+
+<head>
+
+    <style>
+        th {
+            border-right: .1em solid black;
+            padding: .2em;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            border-bottom: 1px dotted black;
+            /* If you want dots under the hoverable text */
+        }
+
+        /* Tooltip text */
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            padding: 5px 0;
+            border-radius: 6px;
+
+            /* Position the tooltip text - see examples below! */
+            position: absolute;
+            z-index: 1;
+        }
+
+        /* Show the tooltip text when you mouse over the tooltip container */
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+        }
+
+        #divform {
+            background-color: rgb(208, 226, 203);
+            margin: auto;
+            width: 60%;
+            min-width: 400px;
+            max-width: 500px;
+            border-radius: 10px;
+            border-color: rgb(172, 182, 182);
+            border-width: 2px;
+            border-style: solid;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        #divform,
+        form,
+        input {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        #submit #downloadfiles{
+            padding: .2em;
+            margin: 0 auto;
+            margin-top: .5em;
+            font-size: 120%;
+            display: block;
+        }
+
+        /* #divsubmit #divdownloadfiles{
+            display: block;
+            text-align: center;
+        } */
+        .top_menu_item_div{
+            color: #fff;
+            display: block;
+            text-align: center;
+        }
+    </style>
+    <script>
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        function check_if_last_file_finished() {
+            let file_store_name_with_extension = getCookie("file_store_name_with_extension");
+            var postdata = "file_store_name_with_extension=" + file_store_name_with_extension;
+            var xhttp1 = new XMLHttpRequest();
+            xhttp1.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    if (this.responseText === "0") {
+                        return false
+                    }
+                    if (this.responseText === "1") {
+                        document.cookie = "viewed_results" + "=" + "1"
+                        location.reload();
+                        return true
+                    }
+                }
+            };
+            xhttp1.open("POST", "/get_Saved_Results?" + postdata);
+            xhttp1.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp1.send();
+        }
+
+        let viewed_results = getCookie("viewed_results");
+        if (viewed_results == "0") {
+            keep_checking();
+        }
+
+        function keep_checking() {
+            setInterval(function () {
+                check_if_last_file_finished();                
+            }, 10 * 1000);
+        }
+
+        window.addEventListener('load', function () {
+            let viewed_results = getCookie("viewed_results");
+            if (viewed_results == "0") {
+                document.getElementById("submit").disabled = true;
+                document.getElementById("submit").innerText = 'Processing...';
+                if (check_if_last_file_finished()) {
+                    document.cookie = "viewed_results" + "=" + "1"
+                    // setCookie("viewed_results", "1");
+
+                    location.reload();
+                } else {
+                    document.getElementById("submit").innerText = 'Still Processing...';
+
+                }
+            }
+        })
+
+        function download_files() {
+            let file_store_name_with_extension = getCookie("file_store_name_with_extension");
+            window.open("/downloadfiles?file_store_name_with_extension="+file_store_name_with_extension, "_blank");
+        }
+
+        function post_file_for_analysing() {
+            var postdata = "IOTIP=" + document.getElementById("IOTIP").value;
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    // console.log("File is sent and being proceessed, when finished will be shown");
+                    document.getElementById("submit").disabled = true;
+                    document.getElementById("submit").innerText = 'Processing...';
+                    keep_checking();
+                    if (this.responseText === "2") {
+
+                    }
+                }
+            };
+            const files = document.querySelector('[name=file]').files;
+            const formData = new FormData();
+            xhttp.open("POST", "/post_file_for_analysing?" + postdata, true);
+            // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            formData.append("file", files[0])
+            xhttp.send(formData);
+
+        }
+    </script>
+</head>
+
+<body style="margin: 0%;">
+    <div style="height: 5%;background-color: rgb(98, 116, 98);">
+        <div class="top_menu_item_div">Home</div>
+        <div class="top_menu_item_div">Archive</div>
+    </div>
+
+    <br>
+    <div id="divform">
+        <form action="http://localhost:5000/" enctype="multipart/form-data">
+            Enter IOT Device IP address: <input type="text" id="IOTIP" name="IOTIP" placeholder="ex: 192.168.1.10">
+            <br>
+            <br>
+            <input type="file" id="file" name="file" />
+            <br>
+            <br>
+
+        </form>
+        <div id="divsubmit">
+            <button id="submit" onclick="post_file_for_analysing()">Upload & analyse</button>
+        </div>
+        
+        <div id="divdownloadfiles">
+            <button id="downloadfiles" onclick="download_files()" disabled>No files to download</button>   
+            
+            {% if dual_analysis|length > 0 %}
+            <script>
+                document.getElementById("downloadfiles").disabled = false;
+                document.getElementById("downloadfiles").innerText = '3 of 3 files ready';
+            </script>
+            {% elif overall_analysis|length > 0 %}
+            <script>
+                document.getElementById("downloadfiles").disabled = true;
+                document.getElementById("downloadfiles").innerText = '2 of 3 files ready';
+            </script>
+            {% elif sourceData|length > 0 %}
+            <script>
+                document.getElementById("downloadfiles").disabled = true;
+                document.getElementById("downloadfiles").innerText = '1 of 3 files ready';
+            </script>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if sourceData|length > 0 %}
+    <div style="text-align: center;">
+        <table
+            style="border: 2px solid #15245e; margin-top:1em ;margin-left:auto;margin-right:auto;border-collapse: collapse;">
+
+            <tr style="border-bottom: .2em solid black;">
+                <th>
+                    <div class="tooltip">IPs
+                        <span class="tooltiptext">IPs of remote destinations that communicate with the IoT</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Remote Port
+                        <span class="tooltiptext">Ports of remote destinations that communicate with the IoT</span>
+                    </div>
+                </th>
+                <th>Protocol</th>
+                <th>
+                    <div class="tooltip">IoT Port
+                        <span class="tooltiptext">Port of IoT</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">send Receive Ratio
+                        <span class="tooltiptext">packets count received at IOT / sent to this server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Num Recieved Per Min
+                        <span class="tooltiptext">average Num Of Packets from IOT to server Per Minute</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Num Sent Per Min
+                        <span class="tooltiptext">average Num Of Packets from server to IOT Per Minute</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">avgTTL
+                        <span class="tooltiptext">average time to live from server to IOT</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">flow volume (bytes)
+                        <span class="tooltiptext">downloaded bytes + uploaded bytes from this server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">flow time (minutes)
+                        <span class="tooltiptext">cap file duration</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">avg Packets Size Sent from IoT (bytes)
+                        <span class="tooltiptext">average uploaded packet size from IOT to this server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">avg Packets Size Recieved at IoT (bytes)
+                        <span class="tooltiptext">average downloaded packet size from this server to IOT</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">flow rate (bps)
+                        <span class="tooltiptext">(uploaded bytes + downloades bytes) for a specific server per
+                            minute</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">isserver
+                        <span class="tooltiptext">check if the server contacted by IOT has a name server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">ssl length avg to IOT (bytes)
+                        <span class="tooltiptext">average payload downloaded by IOT from server - TCP UDP
+                            HTTP(application) layers</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">ssl length min to IOT (bytes)
+                        <span class="tooltiptext">minimim payload downloaded by IOT from server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">ssl length max to IOT (bytes)
+                        <span class="tooltiptext">maximum payload downloaded by IOT from server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">ssl length std to IOT (bytes)
+                        <span class="tooltiptext">std standard deviation for payloads downloaded by IOT from
+                            server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">ssl length avg from IOT (bytes)
+                        <span class="tooltiptext">average payload uploaded by IOT to server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">ssl length min from IOT (bytes)
+                        <span class="tooltiptext">minimim payload uploaded by IOT to server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">ssl length max from IOT (bytes)
+                        <span class="tooltiptext">maximum payload uploaded by IOT to server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">ssl length std from IOT (bytes)
+                        <span class="tooltiptext">std standard deviation for payloads uploaded by IOT to server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">IP flags to IOT (hex)
+                        <span class="tooltiptext">IP layer flags to IOT from this server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">IP flags from IOT (hex)
+                        <span class="tooltiptext">IP layer flags from IOT to this server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">TCP flags to IOT (hex)
+                        <span class="tooltiptext">TCP layer flags to IOT from this server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">TCP flags from IOT (hex)
+                        <span class="tooltiptext">TCP layer flags from IOT to this server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">attack yes
+                        <span class="tooltiptext"></span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">attack type
+                        <span class="tooltiptext"></span>
+                    </div>
+                </th>
+            </tr>
+            {% for item in sourceData %}
+            <tr style="border-bottom: .2em solid black;">
+                <td style="border-right: .1em solid black; padding: 1em;">{{item[0]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[1]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[2]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[3]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[4]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[5]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[6]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[7]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[8]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[9]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[10]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[11]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[12]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[13]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[14]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[15]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[16]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[17]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[18]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[19]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[20]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[21]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[22]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[23]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[24]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[25]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[26]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[27]}}</td>
+                <!-- <script>
+                    document.write('< td style = "margin: 0%;padding: 0%;" > < img id = "element_{{item[0]}}" class = "buttonless" onclick = "goHomewithNewValue(this.id)" alt = "{{item[1]}}" src = ');
+                    document.write(escape('"../static/{{item[1]}}_{{item[4]}}.png"'));
+                    document.write('></td>');
+                </script> -->
+                <!-- {% if item[4]>-1 %}
+                <td style="margin: 0%;padding: 0%;"><img id="element_{{item[0]}}" class="buttonless imageBest" onclick="goHomewithNewValue(this.id)" alt="{{item[1]}}_{{item[4]}}" src='../static/{{item[1]}}_{{item[4]}}.png'></td>
+                {% endif %} {% if item[4]==-2 %}
+                <td style="margin: 0%;padding: 0%;"><img id="element_{{item[0]}}" class="buttonless" onclick="goHomewithNewValue(this.id)" alt="{{item[1]}}__" width=100 src="../static/_bad.png"></td>
+                {% endif %}{% if item[3]==1 and item[4]==-1 %}
+                <td><img id="element_{{item[0]}}" class="buttonless" onclick="goHomewithNewValue(this.id)" alt="{{item[1]}}__" src="../static/_processing.gif"></td>
+                {% endif %} {% if item[3]!=1 and item[4]==-1 %}
+                <td><img id="element_{{item[0]}}" class="buttonless" onclick="goHomewithNewValue(this.id)" alt="{{item[1]}}__" src="../static/_notrated.png"></td>
+                {% endif %} -->
+                <!-- <td>{{item[3]}}</td>
+                <td>{{item[4]}}</td> -->
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+    {% if overall_analysis|length > 0 %}
+    <div style="text-align: center;">
+        <table
+            style="border: 2px solid #15245e; margin-top:1em ;margin-left:auto;margin-right:auto;border-collapse: collapse;">
+
+            <tr style="border-bottom: .2em solid black;">
+                <th><div class="tooltip">all packets recieved per minute
+                    <span class="tooltiptext">average total number of packets recieved(downloaded) at IOT from all connections per minute</span>
+                </div></th>
+                <th><div class="tooltip">initialized tcp per minute
+                    <span class="tooltiptext">average number of initialized tcp connections per minute</span>
+                </div></th>
+                <th><div class="tooltip">tcp reset
+                    <span class="tooltiptext">number of TCP reset packages</span>
+                </div></th>
+                <th><div class="tooltip">ips servers
+                    <span class="tooltiptext">number of connections with destinations that has a name server</span>
+                </div></th>
+                <th><div class="tooltip">ips tcp
+                    <span class="tooltiptext">number of TCP connections</span>
+                </div></th>
+                <th><div class="tooltip">ips udp
+                    <span class="tooltiptext">number of UDP connections</span>
+                </div></th>
+                <th><div class="tooltip">remote Ports TCP
+                    <span class="tooltiptext">number of different open remote ports of all TCP connections</span>
+                </div></th>
+                <th><div class="tooltip">device Ports TCP
+                    <span class="tooltiptext">number of different open IOT ports of all TCP connections</span>
+                </div></th>
+                <th><div class="tooltip">remote Ports UDP
+                    <span class="tooltiptext">number of different open remote ports of all UDP connections</span>
+                </div></th>
+                <th><div class="tooltip">device Ports UDP
+                    <span class="tooltiptext">number of different open IOT ports of all UDP connections</span>
+                </div></th>
+                <th><div class="tooltip">device Ports irresponsive
+                    <span class="tooltiptext">number of IOT ports that didn't respond back</span>
+                </div></th>
+                <th><div class="tooltip">dns req
+                    <span class="tooltiptext">average number of dns requests per minute</span>
+                </div></th>
+                <th><div class="tooltip">dns resp
+                    <span class="tooltiptext">average number of dns responds per minute</span>
+                </div></th>
+                <th><div class="tooltip">ntp req
+                    <span class="tooltiptext">average number of ntp requests per minute</span>
+                </div></th>
+                <th><div class="tooltip">ntp resp
+                    <span class="tooltiptext">average number of ntp responds per minute</span>
+                </div></th>
+                <th><div class="tooltip">attack yes
+                    <span class="tooltiptext">cap file labeled as under attack</span>
+                </div></th>
+                <th><div class="tooltip">attack type
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+            </tr>
+
+            {% for item in overall_analysis %}
+            <tr style="border-bottom: .2em solid black;">
+                <td style="border-right: .1em solid black; padding: 1em;">{{item[0]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[1]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[2]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[3]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[4]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[5]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[6]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[7]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[8]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[9]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[10]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[11]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[12]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[13]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[14]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[15]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[16]}}</td>
+
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
+
+    {% if dual_analysis|length > 0 %}
+    <div style="text-align: center;">
+        <table
+            style="border: 2px solid #15245e; margin-top:1em ;margin-left:auto;margin-right:auto;border-collapse: collapse;">
+
+            <tr style="border-bottom: .2em solid black;">
+                <th><div class="tooltip">srcIP
+                    <span class="tooltiptext">average total number of packets recieved(downloaded) at IOT from all connections per minute</span>
+                </div></th>
+                <th><div class="tooltip">srcPort
+                    <span class="tooltiptext">average number of initialized tcp connections per minute</span>
+                </div></th>
+                <th><div class="tooltip">dstIP
+                    <span class="tooltiptext">number of TCP reset packages</span>
+                </div></th>
+                <th><div class="tooltip">dstport
+                    <span class="tooltiptext">number of connections with destinations that has a name server</span>
+                </div></th>
+                <th><div class="tooltip">Protocol
+                    <span class="tooltiptext">number of TCP connections</span>
+                </div></th>
+                <th><div class="tooltip">reqIPflag
+                    <span class="tooltiptext">number of UDP connections</span>
+                </div></th>
+                <th><div class="tooltip">resIPflag
+                    <span class="tooltiptext">number of different open remote ports of all TCP connections</span>
+                </div></th>
+                <th><div class="tooltip">reqLen
+                    <span class="tooltiptext">number of different open IOT ports of all TCP connections</span>
+                </div></th>
+                <th><div class="tooltip">resLen
+                    <span class="tooltiptext">number of different open remote ports of all UDP connections</span>
+                </div></th>
+                <th><div class="tooltip">reqPayload
+                    <span class="tooltiptext">number of different open IOT ports of all UDP connections</span>
+                </div></th>
+                <th><div class="tooltip">resPayload
+                    <span class="tooltiptext">number of IOT ports that didn't respond back</span>
+                </div></th>
+                <th><div class="tooltip">reqttL
+                    <span class="tooltiptext">average number of dns requests per minute</span>
+                </div></th>
+                <th><div class="tooltip">resttl
+                    <span class="tooltiptext">average number of dns responds per minute</span>
+                </div></th>
+                <th><div class="tooltip">restimemin
+                    <span class="tooltiptext">average number of ntp requests per minute</span>
+                </div></th>
+                <th><div class="tooltip">restimeavg
+                    <span class="tooltiptext">average number of ntp responds per minute</span>
+                </div></th>
+                <th><div class="tooltip">restimemax
+                    <span class="tooltiptext">cap file labeled as under attack</span>
+                </div></th>
+                <th><div class="tooltip">repeatance
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">repeatance / min
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">isServer
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">device_on
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">application_on
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">application_idel
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">attack_yes
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">attack_type
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">alias_name
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">device_type
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">scenario
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+            </tr>
+
+            {% for item in dual_analysis %}
+            <tr style="border-bottom: .2em solid black;">
+                <td style="border-right: .1em solid black; padding: 1em;">{{item[0]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[1]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[2]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[3]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[4]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[5]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[6]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[7]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[8]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[9]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[10]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[11]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[12]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[13]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[14]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[15]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[16]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[17]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[18]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[19]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[20]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[21]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[22]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[23]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[24]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[25]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[26]}}</td>
+
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+</body>
+
+</html>
