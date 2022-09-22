@@ -11,5 +11,20 @@ Extract traffic features for each IoT device and store for future ML/DL models t
 by Ahmed Tolba
 """
 
-pip install aioflask
-run flask
+git clone https://github.com/ahmed0waves/IOTtrafficAnalyzer
+
+sudo apt-get update
+
+sudo apt-get install python3-pip
+
+pip install flask
+
+pip install flask_sqlalchemy
+
+pip install pyshark
+
+pip3 install xlsxwriter
+
+pip install pandas
+
+sudo apt-get install tshark

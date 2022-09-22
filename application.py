@@ -203,4 +203,4 @@ def results():
   return render_template('results.html')
 
 if __name__ == '__main__': 
-  application.run(debug=True,host="0.0.0.0",use_reloader=True)
+  application.run(debug=True,host="0.0.0.0",use_reloader=True,port=80)
