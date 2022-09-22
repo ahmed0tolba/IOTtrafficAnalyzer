@@ -1,0 +1,17 @@
+all_packets_recieved_per_minute,0.51
+initialized_tcp_per_minute,0
+tcp_reset,0
+ips_servers,1
+ips_tcp,1
+ips_udp,0
+remote Ports TCP,1
+device Ports TCP,1
+remote Ports UDP,0
+device Ports UDP,0
+device Ports irresponsive,0
+dns req,0
+dns resp,0
+ntp req,0
+ntp resp,0
+attack yes,False
+attack type,
