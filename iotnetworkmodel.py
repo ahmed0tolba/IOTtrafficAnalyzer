@@ -274,7 +274,7 @@ def analyseDeviceIP(IOTIP,studyFile,device_on=False,application_on=False,applica
             if os.name == "nt":
               TCP_flag_to_IOT = float(str(packet1.layers[2]).splitlines()[12].split("0x")[1].split()[0]) 
             else:
-              TCP_flag_to_IOT = float(str(packet1.layers[2]).splitlines()[9].split("0x")[1].split()[0]) 
+              TCP_flag_to_IOT = float(str(packet1.layers[2]).splitlines()[11].split("0x")[1].split()[0]) 
             # print("hi ",TCP_flag_to_IOT)          
 
             layer2lines = str(packet1.layers[2]).splitlines()
@@ -315,7 +315,8 @@ def analyseDeviceIP(IOTIP,studyFile,device_on=False,application_on=False,applica
             if os.name == "nt":
               TCP_flag_to_IOT = float(str(packet1.layers[2]).splitlines()[12].split("0x")[1].split()[0])  # 9 in colab
             else:
-              TCP_flag_to_IOT = float(str(packet1.layers[2]).splitlines()[9].split("0x")[1].split()[0])  # 9 in colab
+              #print(packet1.layers[2])
+              TCP_flag_to_IOT = float(str(packet1.layers[2]).splitlines()[11].split("0x")[1].split()[0])  # 9 in colab
             
             ssl_layer_packekets_for_this_ip += 1
             # if len(packet1.layers)>4:
@@ -454,7 +455,7 @@ def analyseDeviceIP(IOTIP,studyFile,device_on=False,application_on=False,applica
             if os.name == "nt":
               TCP_flag_from_IOT = float(str(packet1.layers[2]).splitlines()[12].split("0x")[1].split()[0])
             else:
-              TCP_flag_from_IOT = float(str(packet1.layers[2]).splitlines()[9].split("0x")[1].split()[0])
+              TCP_flag_from_IOT = float(str(packet1.layers[2]).splitlines()[11].split("0x")[1].split()[0])
             layer2lines = str(packet1.layers[2]).splitlines()
             # print(len(layer2lines))
 
@@ -494,7 +495,7 @@ def analyseDeviceIP(IOTIP,studyFile,device_on=False,application_on=False,applica
             if os.name == "nt":
               TCP_flag_from_IOT = float(str(packet1.layers[2]).splitlines()[12].split("0x")[1].split()[0]) # 9 in colab
             else:
-              TCP_flag_from_IOT = float(str(packet1.layers[2]).splitlines()[9].split("0x")[1].split()[0]) # 9 in colab
+              TCP_flag_from_IOT = float(str(packet1.layers[2]).splitlines()[11].split("0x")[1].split()[0]) # 9 in colab
 
             ssl_layer_packekets_from_this_ip += 1
             ssl_layer_packekets_size = float(str(packet1.layers[3]).splitlines()[4].split()[-1])
@@ -859,10 +860,10 @@ def analyseDeviceIPDualCommunications(IOTIP,studyFile,device_on,application_on,a
         tcp_nxt_seq_num_req = int(str(packet.layers[2]).splitlines()[8].split()[3])  # 6 in colab 
         tcp_ack_num_req = int(str(packet.layers[2]).splitlines()[9].split()[2]) # 7 in colab 
       else:
-        flag_req = int(str(packet.layers[2]).splitlines()[9].split("0x")[1].split()[0])  # 9 in colab 
+        flag_req = int(str(packet.layers[2]).splitlines()[11].split("0x")[1].split()[0])  # 9 in colab 
         tcp_seq_num_req = int(str(packet.layers[2]).splitlines()[5].split()[2])   # 5 in colab 
-        tcp_nxt_seq_num_req = int(str(packet.layers[2]).splitlines()[6].split()[3])  # 6 in colab 
-        tcp_ack_num_req = int(str(packet.layers[2]).splitlines()[7].split()[2]) # 7 in colab 
+        tcp_nxt_seq_num_req = int(str(packet.layers[2]).splitlines()[7].split()[3])  # 6 in colab 
+        tcp_ack_num_req = int(str(packet.layers[2]).splitlines()[8].split()[2]) # 7 in colab 
       
       packets.append([resolve_hostname(packet.ip.src)[0] , srcport , resolve_hostname(packet.ip.dst)[0], dstport, packet.transport_layer,tcp_nxt_seq_num_req])
 
@@ -919,21 +920,21 @@ def analyseDeviceIPDualCommunications(IOTIP,studyFile,device_on,application_on,a
           tcp_nxt_seq_num_req = int(str(packet.layers[2]).splitlines()[8].split()[3])  # 6 in colab 
           tcp_ack_num_req = int(str(packet.layers[2]).splitlines()[9].split()[2])   # 7 in colab 
         else:
-          flag_req = int(str(packet.layers[2]).splitlines()[9].split("0x")[1].split()[0])  # 9 in colab 
+          flag_req = int(str(packet.layers[2]).splitlines()[11].split("0x")[1].split()[0])  # 9 in colab 
           tcp_seq_num_req = int(str(packet.layers[2]).splitlines()[5].split()[2])  # 5 in colab 
-          tcp_nxt_seq_num_req = int(str(packet.layers[2]).splitlines()[6].split()[3])  # 6 in colab 
-          tcp_ack_num_req = int(str(packet.layers[2]).splitlines()[7].split()[2])   # 7 in colab 
+          tcp_nxt_seq_num_req = int(str(packet.layers[2]).splitlines()[7].split()[3])  # 6 in colab 
+          tcp_ack_num_req = int(str(packet.layers[2]).splitlines()[8].split()[2])   # 7 in colab 
         req_time = packet.sniff_timestamp
         length_req = packet.captured_length
         ttl_req = packet['IP'].ttl
         layer2lines = str(packet.layers[2]).splitlines()
-        
+#        print(packet.layers[2])
         if os.name == 'nt':
           line1 = 38
           line2 = 39
         else:
-          line1 = 33
-          line2 = 34
+          line1 = 37
+          line2 = 38
         if len(layer2lines)>line1 and len(packet.layers)==3:
           if len(layer2lines[line1].split("(")[-1].split()) > 1 :
             if layer2lines[line1].split("(")[-1].split()[1] == "bytes)":
@@ -950,7 +951,7 @@ def analyseDeviceIPDualCommunications(IOTIP,studyFile,device_on,application_on,a
         # looping on the next packets for response
         for aftercount in range (cap_count,numberOf_Packets): 
           if ("TCP" in str(cap[aftercount].layers) and packet.ip.src == cap[aftercount].ip.dst and packet.ip.dst == cap[aftercount].ip.src and packet.transport_layer == cap[aftercount].transport_layer):
-            tcp_nxt_seq_num_res_aftercount = int(str(cap[aftercount].layers[2]).splitlines()[8].split()[3]) # 6 in colab 
+            tcp_nxt_seq_num_res_aftercount = int(str(cap[aftercount].layers[2]).splitlines()[8].split()[2]) # 6 in colab 
             if tcp_nxt_seq_num_res_aftercount == tcp_ack_num_req:
               reqonly = False
               if os.name == "nt":
@@ -959,10 +960,10 @@ def analyseDeviceIPDualCommunications(IOTIP,studyFile,device_on,application_on,a
                 tcp_nxt_seq_num_res = int(str(cap[aftercount].layers[2]).splitlines()[8].split()[3]) # 6 in colab 
                 tcp_ack_num_res = int(str(cap[aftercount].layers[2]).splitlines()[9].split()[2])  # 7 in colab 
               else:
-                flag_res = int(str(cap[aftercount].layers[2]).splitlines()[9].split("0x")[1].split()[0])  # 9 in colab 
+                flag_res = int(str(cap[aftercount].layers[2]).splitlines()[11].split("0x")[1].split()[0])  # 9 in colab 
                 tcp_seq_num_res = int(str(cap[aftercount].layers[2]).splitlines()[5].split()[2])  # 5 in colab 
-                tcp_nxt_seq_num_res = int(str(cap[aftercount].layers[2]).splitlines()[6].split()[3]) # 6 in colab 
-                tcp_ack_num_res = int(str(cap[aftercount].layers[2]).splitlines()[7].split()[2])  # 7 in colab 
+                tcp_nxt_seq_num_res = int(str(cap[aftercount].layers[2]).splitlines()[7].split()[3]) # 6 in colab 
+                tcp_ack_num_res = int(str(cap[aftercount].layers[2]).splitlines()[8].split()[2])  # 7 in colab 
               res_time = cap[aftercount].sniff_timestamp
               req_res_time = float(res_time) - float(req_time)
 
