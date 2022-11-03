@@ -85,7 +85,7 @@ def download():
     return send_file(
         stream,
         as_attachment=True,
-        attachment_filename=file_store_name_with_extension+'.zip'
+        download_name=file_store_name_with_extension+'.zip'
     )
 
 def getSavedResults(file_store_name_with_extension):
@@ -203,4 +203,4 @@ def results():
   return render_template('results.html')
 
 if __name__ == '__main__': 
-  application.run(debug=True,host="0.0.0.0",use_reloader=True,port=80)
+  application.run(debug=True,host="0.0.0.0",use_reloader=True)
