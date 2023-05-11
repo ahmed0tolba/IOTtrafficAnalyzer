@@ -8,7 +8,6 @@ Original file is located at
 Convert kali to access point and log a set of IoT devices into it.
 Capture the traffic using Wireshark.
 Extract traffic features for each IoT device and store for future ML/DL models to analyse.
-by Ahmed Tolba
 """
 
 python 3.7.9
