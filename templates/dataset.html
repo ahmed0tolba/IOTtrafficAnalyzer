@@ -1,0 +1,40 @@
+<head>
+<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='styles/style.css')}}">
+    <script type="text/javascript" src="{{url_for('static',filename='scripts/main.js')}}"></script>
+    <link rel="icon" type="image/png" href="{{url_for('static',filename='favicon.png')}}">
+<title>Automated and Comprehensive IoT Traffic Analyzer and Feature Extraction Tool (IoT ACTAFE)</title>
+</head>
+<body style="margin: 0%;">
+    <div style="height: 2em;background-color: #0058dd;">
+        <a href="/">
+            <div class="top_menu_item_div">Home</div>
+        </a>
+        <a href="/archive">
+            <div class="top_menu_item_div">Archive</div>
+        </a>
+        <a href="/dataset">
+            <div class="top_menu_item_div">Dataset</div>
+        </a>
+    </div>
+    
+    
+    <ul>     
+       
+      {% for x in request.path.split("/") %}
+      {% if x != '' %}
+      <a style="background-color: blanchedalmond;border: 1px grey solid;border-radius: 3px;padding:.5em;margin:.5em" href="{{ '/'.join((request.path.split('/')[:request.path.split('/').index(x)+1]) if request.path != '/' else '') }}">{{x}}  </a>  /
+      &nbsp;
+      {% endif %}
+      {% endfor %}      
+<br><br>
+      {% for file in files %}
+      <li>
+          <a style="margin:.5em;line-height:.5em" href="{{ (request.path + '/' if request.path != '/' else '') + file }}">
+              {{ file }}
+          </a>
+      </li>
+      {% endfor %}
+    </ul>
+
+</body> 
+

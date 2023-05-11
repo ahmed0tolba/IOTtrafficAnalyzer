@@ -1,0 +1,1006 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='styles/style.css')}}">
+    <script type="text/javascript" src="{{url_for('static',filename='scripts/main.js')}}"></script>
+    
+      <link rel="icon" type="image/png" href="{{url_for('static',filename='favicon.png')}}">
+
+<title>Automated and Comprehensive IoT Traffic Analyzer and Feature Extraction Tool (IoT ACTAFE)</title>
+    <style>
+
+    </style>
+    <script>
+
+        function check_ip_valid() {                    
+          const regexExp = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/gi;
+          return regexExp.test(document.getElementById("IOTIP").value);
+        }
+
+        function check_if_last_file_finished() {
+            let file_store_name_with_extension = getCookie("file_store_name_with_extension");
+            var postdata = "file_store_name_with_extension=" + file_store_name_with_extension;
+            var xhttp1 = new XMLHttpRequest();
+            xhttp1.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    if (this.responseText === "0") {
+                        return false
+                    }
+                    if (this.responseText === "1") {
+                        document.cookie = "viewed_results" + "=" + "1"
+                        location.reload();
+                        return true
+                    }
+                    if (this.responseText === "-1") {
+                        document.cookie = "viewed_results" + "=" + "1"
+                        location.reload();
+                        return true
+                    }
+                }
+            };
+            xhttp1.open("POST", "/get_Saved_Results?" + postdata);
+            xhttp1.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp1.send();
+        }
+
+        let viewed_results = getCookie("viewed_results");
+        if (viewed_results == "0") {
+            keep_checking();
+        }
+
+        function keep_checking() {
+            setInterval(function () {
+                check_if_last_file_finished();
+            }, 10 * 1000);
+        }
+
+        window.addEventListener('load', function () {
+            let viewed_results = getCookie("viewed_results");
+            if (viewed_results == "0") {
+                document.getElementById("submit").disabled = true;
+                document.getElementById("submit").innerText = 'Processing...';
+                document.getElementById("IOTIP").disabled = true;
+                document.getElementById("file").disabled = true;
+                document.getElementById("devicetype").disabled = true;
+                document.getElementById("other").disabled = true;
+                document.getElementById("processing").style.display = "flex";
+                document.getElementById("downloadcommunicationpattern").style.display = "flex";
+                document.getElementById("downloadindepthpacketanalysis").style.display = "flex";
+                document.getElementById("downloadnetworktrafficanalysis").style.display = "flex";
+                document.getElementById("downloadcommunicationpattern").src = "{{url_for('static',filename='processing2.gif')}}"
+                document.getElementById("downloadindepthpacketanalysis").src = "{{url_for('static',filename='processing2.gif')}}"
+                document.getElementById("downloadnetworktrafficanalysis").src = "{{url_for('static',filename='processing2.gif')}}"
+                document.getElementById("downloadcommunicationpattern").style.width = "80px";
+                document.getElementById("downloadindepthpacketanalysis").style.width = "80px";
+                document.getElementById("downloadnetworktrafficanalysis").style.width = "80px";
+                document.getElementById("downloadcommunicationpattern").style.pointerEvents = "none";
+                document.getElementById("downloadindepthpacketanalysis").style.pointerEvents = "none";
+                document.getElementById("downloadnetworktrafficanalysis").style.pointerEvents = "none";
+                document.getElementById("reporttable").style.display = "none";
+                // document.getElementById("downloadfiles").disabled = true;
+                document.getElementById("download_table").style.display = "none";
+                document.getElementById("generate_dataset_button").style.display = "none";
+                if (check_if_last_file_finished()) {
+                    document.cookie = "viewed_results" + "=" + "1"
+                    // setCookie("viewed_results", "1");
+
+                    location.reload();
+                } else {
+                    document.getElementById("submit").innerText = 'Still Processing...';
+                    document.getElementById("IOTIP").disabled = true;
+                    document.getElementById("file").disabled = true;
+                    document.getElementById("devicetype").disabled = true;
+                    document.getElementById("other").disabled = true;
+                    document.getElementById("processing").style.display = "flex";
+                    document.getElementById("downloadcommunicationpattern").style.display = "flex";
+                    document.getElementById("downloadindepthpacketanalysis").style.display = "flex";
+                    document.getElementById("downloadnetworktrafficanalysis").style.display = "flex";
+                    document.getElementById("downloadcommunicationpattern").src = "{{url_for('static',filename='processing2.gif')}}"
+                    document.getElementById("downloadindepthpacketanalysis").src = "{{url_for('static',filename='processing2.gif')}}"
+                    document.getElementById("downloadnetworktrafficanalysis").src = "{{url_for('static',filename='processing2.gif')}}"
+                    document.getElementById("downloadcommunicationpattern").style.width = "80px";
+                    document.getElementById("downloadindepthpacketanalysis").style.width = "80px";
+                    document.getElementById("downloadnetworktrafficanalysis").style.width = "80px";
+                    document.getElementById("downloadcommunicationpattern").style.pointerEvents = "none";
+                    document.getElementById("downloadindepthpacketanalysis").style.pointerEvents = "none";
+                    document.getElementById("downloadnetworktrafficanalysis").style.pointerEvents = "none";
+                    document.getElementById("reporttable").style.display = "none";
+                    // document.getElementById("downloadfiles").disabled = true;
+                    document.getElementById("download_table").style.display = "none";
+                    document.getElementById("generate_dataset_button").style.display = "none";
+
+                }
+            }
+        })
+
+        function download_files() {
+            let file_store_name_with_extension = getCookie("file_store_name_with_extension");
+            window.open("/downloadfiles?file_store_name_with_extension=" + file_store_name_with_extension, "_blank");
+        }
+
+        function downloadcommunicationpattern() {
+            let file_store_name_with_extension = getCookie("file_store_name_with_extension");
+            window.open("/downloadcommunicationpattern?file_store_name_with_extension=" + file_store_name_with_extension, "_blank");
+        }
+        function downloadindepthpacketanalysis() {
+            let file_store_name_with_extension = getCookie("file_store_name_with_extension");
+            window.open("/downloadindepthpacketanalysis?file_store_name_with_extension=" + file_store_name_with_extension, "_blank");
+        }
+        function downloadnetworktrafficanalysis() {
+            let file_store_name_with_extension = getCookie("file_store_name_with_extension");
+            window.open("/downloadnetworktrafficanalysis?file_store_name_with_extension=" + file_store_name_with_extension, "_blank");
+        }
+        function downloadiottrafficdataset() {
+            let file_store_name_with_extension = getCookie("file_store_name_with_extension");
+            window.open("/downloadiottrafficdataset?file_store_name_with_extension=" + file_store_name_with_extension, "_blank");
+        }
+
+
+
+        function post_file_for_analysing() {
+            var inputs_are_good = true;
+            var fu1 = document.querySelector('[name=file]').files;            
+
+            if (fu1.length == 0)
+            {
+              document.getElementById("filemessage").innerHTML = "Please select a file";
+              inputs_are_good = false;
+            }else{
+              var filename = fu1[0].name;
+              
+              if (filename.lenght < 6)
+              {
+                document.getElementById("filemessage").innerHTML = "Invalid file";
+                inputs_are_good = false;
+              }
+              if (filename.slice(-7) !== ".pcapng")
+              {
+                 document.getElementById("filemessage").innerHTML = "Invalid file";
+                 inputs_are_good = false;                
+              }
+            }  
+            
+            
+            
+            
+            var postdata = "IOTIP=" + document.getElementById("IOTIP").value;
+            if (!check_ip_valid() )
+            {
+                document.getElementById("IOTIPmessage").innerHTML = "Please enter a valid ip.";
+                inputs_are_good = false;
+            }
+            
+            if (!inputs_are_good){
+              return;
+            }
+            
+            if (document.getElementById("devicetype").value == "Other") {
+                postdata += "&devicetype=" + document.getElementById("typeother").value;
+            }
+            else {
+                postdata += "&devicetype=" + document.getElementById("devicetype").value;
+            }
+
+
+            // console.log("File is sent and being proceessed, when finished will be shown");
+
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    keep_checking();
+                    if (this.responseText === "2") {
+
+                    }
+                }
+            };
+
+            const files = document.querySelector('[name=file]').files;
+            if (document.getElementById("IOTIP").value == "") {
+                // alert("No Ip entered")
+                document.getElementById("IOTIPmessage").innerHTML = "No Ip entered";
+                return false;
+            }
+            if (!files[0]) {
+                document.getElementById("filemessage").innerHTML = "No file chosen";
+                return false;
+            }
+
+            const formData = new FormData();
+            xhttp.open("POST", "/post_file_for_analysing?" + postdata, true);
+            // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            formData.append("file", files[0])
+            xhttp.send(formData);
+            
+            document.getElementById("submit").disabled = true;
+            document.getElementById("submit").innerText = 'Processing...';
+            document.getElementById("IOTIP").disabled = true;
+            document.getElementById("file").disabled = true;
+            document.getElementById("devicetype").disabled = true;
+            document.getElementById("other").disabled = true;
+            document.getElementById("downloadcommunicationpattern").style.display = "flex";
+            document.getElementById("downloadindepthpacketanalysis").style.display = "flex";
+            document.getElementById("downloadnetworktrafficanalysis").style.display = "flex";
+            document.getElementById("downloadcommunicationpattern").src = "{{url_for('static',filename='processing2.gif')}}"
+            document.getElementById("downloadindepthpacketanalysis").src = "{{url_for('static',filename='processing2.gif')}}"
+            document.getElementById("downloadnetworktrafficanalysis").src = "{{url_for('static',filename='processing2.gif')}}"
+            document.getElementById("downloadcommunicationpattern").style.width = "80px";
+            document.getElementById("downloadindepthpacketanalysis").style.width = "80px";
+            document.getElementById("downloadnetworktrafficanalysis").style.width = "80px";
+            document.getElementById("downloadcommunicationpattern").style.pointerEvents = "none";
+            document.getElementById("downloadindepthpacketanalysis").style.pointerEvents = "none";
+            document.getElementById("downloadnetworktrafficanalysis").style.pointerEvents = "none";
+            document.getElementById("reporttable").style.display = "none";
+            // document.getElementById("downloadfiles").disabled = true;
+            document.getElementById("processing").style.display = "flex";
+            document.getElementById("download_table").style.display = "none";
+            document.getElementById("generate_dataset_button").style.display = "none";
+
+        }
+
+        function tdclick(txt) {
+            document.getElementById("IOTIP").value = txt;
+            document.getElementById("IOTIPmessage").innerHTML = ""
+        };
+        function device_type_change() {
+            if (document.getElementById("devicetype").value == "Other") {
+                document.getElementById("other").style.display = "";
+            } else {
+                document.getElementById("other").style.display = "none";
+            }
+
+        };
+    </script>
+</head>
+
+<body style="margin: 0%;">
+    <div style="height: 2em;background-color: #0058dd;">
+        <a href="/">
+            <div class="top_menu_item_div">Home</div>
+        </a>
+        <a href="/archive">
+            <div class="top_menu_item_div">Archive</div>
+        </a>
+        <a href="/dataset">
+            <div class="top_menu_item_div">Dataset</div>
+        </a>
+    </div>
+
+    <br>
+    
+    <div style="text-align:center;font-size:200%;font-weight:bold;" >IoT TAHFE</div>
+    
+    <br>
+    
+    <div id="intro"  >
+        IoT traffic analyzer tool with automated and holistic feature extraction capability (IoT TAHFE) aims to help researches and students to analyze the traffic of IoT devices for security purposes.
+      <br><br>
+      
+      The first step is to have a pre collected IoT traffic in a pcap format, then enter the three required parameters as an input:<br>
+      1. IP address of the IoT device,<br>
+      2. Upload the. pcapng file of the IoT device to analyze,<br>
+      3. Select the IoT device type from the drop-down list.
+
+    </div>  
+
+    
+    
+    
+    <div id="divform">
+        <form  action="http://localhost:5000/" enctype="multipart/form-data">
+            Enter IOT Device IP address: <input type="text" id="IOTIP" name="IOTIP" placeholder="ex: 192.168.1.10"
+                onfocus='document.getElementById("IOTIPmessage").innerHTML = "";'>
+            <br>
+            <span id="IOTIPmessage" style="color:red"></span>
+            <br><br>
+            <input type="file" id="file" name="file" accept=".pcapng" onfocus='document.getElementById("filemessage").innerHTML = "";'/>
+
+            <span id="filemessage" style="color:red"></span>
+            <br>
+            <br>
+            <label for="devicetype">Select Device Type:</label>
+            <select id="devicetype" name="devicetype" onchange="device_type_change()">
+                <option value="SmartPlug" selected>Smart Plug</option>
+                <option value="SmartLamp">Smart Lamp</option>
+                <option value="SmartCamera">Smart Camera</option>
+                <option value="Alexa">Alexa</option>
+                <option value="Other">Other..</option>
+            </select>
+            <span id="other" style="display: none;">Please specify device type
+                <input type="text" id="typeother" name="typeother" placeholder="ex: Smart Fan"></span>
+
+        </form>
+        <div id="divsubmit" style="margin-right: 5px;margin-left: 5px;">
+            <button id="submit" class="buttonx" onclick="post_file_for_analysing()">Analyse</button>
+            <br>
+            <table id = "download_table">
+                <tr style="height: 3em;">
+                    <td style="text-align: middle; ">
+                        Full Communication pattern mapping.csv 
+                    </td>
+                    <td width="40px" style="text-align: center;"><img id="downloadcommunicationpattern"
+                            onclick="downloadcommunicationpattern()" class="hoverable" src="static/download.png"
+                            alt="download">
+                    </td>
+                    <td width="40px" style="text-align: center;"><a href="/help" target="_blank"><img src="static/exclamation.png" style="height:1.5em"></a>
+                    </td>
+                </tr>
+                <tr style="height: 3em;">
+                    <td>
+                        In depth IoT-Server per packet analysis.csv</td>
+                    <td style="text-align: center;"><img id="downloadindepthpacketanalysis"
+                            onclick="downloadindepthpacketanalysis()" class="hoverable" src="static/download.png"
+                            alt="download">
+                    </td>
+                    <td width="40px" style="text-align: center;"><a href="/help#2" target="_blank"><img src="static/exclamation.png" style="height:1.5em"></a>
+                    </td>
+                </tr>
+                <tr style="height: 3em;" >
+                    <td>
+                        General IoT traffic analysis within the network.csv</td>
+                    <td style="text-align: center;"><img id="downloadnetworktrafficanalysis"
+                            onclick="downloadnetworktrafficanalysis()" class="hoverable" src="static/download.png"
+                            alt="download">
+                    </td>
+                    <td width="40px" style="text-align: center;"><a href="/help#3" target="_blank"><img src="static/exclamation.png" style="height:1.5em"></a>
+                    </td>
+                </tr>
+                
+            </table>
+            <button id="generate_dataset_button" class="buttonx" onclick="downloadiottrafficdataset()">Generate IoT Dataset</button>
+        </div>
+
+
+        <!-- <div id="divdownloadfiles">
+            <button id="downloadfiles" onclick="download_files()" disabled>No files to download</button>
+
+
+        </div> -->
+    </div>
+
+
+
+
+    {% if overall_analysis|length > 0 %}
+
+    <script>
+        document.getElementById("downloadcommunicationpattern").style.pointerEvents = "auto";
+        document.getElementById("downloadindepthpacketanalysis").style.pointerEvents = "auto";
+        document.getElementById("downloadnetworktrafficanalysis").style.pointerEvents = "auto";
+        document.getElementById("download_table").style.display = "flex";
+        document.getElementById("generate_dataset_button").style.display = "flex";
+
+    </script>
+    <div id="analysis">
+
+        <table id="reporttable" class="report">
+            <tr class="report">
+                {% if all_remote_ips_has_NameServer %}
+                <td>
+                    All IOT destinations are Legamite.
+                </td>
+                <td><img class="report" src="static/secure.png">
+                </td>
+                {% else %}
+                <td>IOT communication destinations need further inspection.</td>
+                <td><img class="report" src="static/unsecure.png"></td>
+                {% endif %}
+            </tr>
+            <tr class="report">
+                {% if connected_to_manufacturer %}
+                <td>Connected to Manufacurar Server.</td>
+                <td><img class="report" src="static/cloudconnect.png"></td>
+                {% else %}
+                <td>Not connected to Manufacturer Server.</td>
+                <td><img class="report" src="static/disconnected-cloud.png"></td>
+                {% endif %}
+            </tr>
+            <tr class="report">
+                {% if all_tcp_ports_are_443 %}
+                <td>All communications are encrypted over SSL.</td>
+                <td><img class="report" src="static/https.png"></td>
+                {% else %}
+                <td>Unencrypted communications found.</td>
+                <td><img class="report" src="static/http.png"></td>
+                {% endif %}
+            </tr>
+            <tr class="report">
+                {% if security_comment == "No Action Required" %}
+                <td>Report: {{security_comment}}</td>
+                <td><img class="report" src="static/check.png"></td>
+                {% else %}
+                <td>Report: {{security_comment}}</td>
+                <td><img class="report" src="static/inspect.png"></td>
+                {% endif %}
+
+            </tr>
+        </table>
+    </div>
+    {% endif %}
+    {% if dual_analysis|length > 0 %}
+
+
+    <script>
+        // document.getElementById("downloadfiles").disabled = false;
+        // console.log("as");
+        document.getElementById("downloadcommunicationpattern").style.display = "flex";
+        document.getElementById("downloadindepthpacketanalysis").style.display = "flex";
+        document.getElementById("downloadnetworktrafficanalysis").style.display = "flex";
+        document.getElementById("downloadcommunicationpattern").src = "{{url_for('static',filename='download.png')}}"
+        document.getElementById("downloadindepthpacketanalysis").src = "{{url_for('static',filename='download.png')}}"
+        document.getElementById("downloadnetworktrafficanalysis").src = "{{url_for('static',filename='download.png')}}"
+        document.getElementById("downloadcommunicationpattern").style.width = "30px";
+        document.getElementById("downloadindepthpacketanalysis").style.width = "30px";
+        document.getElementById("downloadnetworktrafficanalysis").style.width = "30px";
+        // document.getElementById("downloadfiles").innerText = '3 of 3 files ready';
+    </script>
+    {% elif overall_analysis|length > 0 %}
+    <script>
+        // document.getElementById("downloadfiles").disabled = true;
+        // document.getElementById("downloadfiles").innerText = '2 of 3 files ready';
+    </script>
+    {% elif sourceData|length > 0 %}
+    <script>
+        // document.getElementById("downloadfiles").disabled = true;
+        // document.getElementById("downloadfiles").innerText = '1 of 3 files ready';
+    </script>
+    {% endif %}
+
+    <script>
+        if (getCookie("IOTIP") != "") {
+            document.getElementById("IOTIP").value = getCookie("IOTIP");
+        }
+    </script>
+
+    <img id="processing" src="static/processing.gif">
+
+
+    {% if ips_dst|length > 0 %}
+
+    <script>
+        document.getElementById("IOTIPmessage").innerHTML = "Please select one of the valid ips,<br> The last valid is selected by default.";
+    </script>
+    <div style="text-align: center;">
+        <table
+            style="border: 2px solid #15245e; margin-top:1em ;margin-left:auto;margin-right:auto;border-collapse: collapse;">
+
+            <tr style="border-bottom: .2em solid black;">
+                <th>
+                    <div class="tooltip">Valid IPs
+                        <span class="tooltiptext">Please select a vaild ip.
+                        </span>
+                    </div>
+                </th>
+            </tr>
+            {% for item in ips_dst %}
+            <script>
+                document.getElementById("IOTIP").value = "{{item[0]}}";
+            </script>
+            <tr class="validip">
+                <td style="border-right: .1em solid black; padding: 1em;" onclick='tdclick("{{item[0]}}")'>{{item[0]}}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
+    {% if sourceData|length > 0 %}
+    <div style="text-align: center;display: none;">
+        <table
+            style="border: 2px solid #15245e; margin-top:1em ;margin-left:auto;margin-right:auto;border-collapse: collapse;">
+
+            <tr style="border-bottom: .2em solid black;">
+                <th>
+                    <div class="tooltip">Dest_IP
+                        <span class="tooltiptext">All the destination IP addresses that communicate with the IoT device.
+                        </span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Dest_port_no
+                        <span class="tooltiptext">determines the port number of the destination IP address
+                            communication, e.g., port 9999</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">IoT_port_no
+                        <span class="tooltiptext">Determine the port number on the IoT device that communicates with the
+                            destination IP address</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Protocol
+                        <span class="tooltiptext">The application protocol of the communication. For example, DNS, FTP,
+                            HTTP, IMAP, etc. </span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Send_receive_ratio
+                        <span class="tooltiptext">Calculating the ratio of the number of packets sent from the IoT
+                            device divided by the number of packets received from the server per minute.</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">No_of_received_packets_per_minutes
+                        <span class="tooltiptext">Calculating the number of packets received by the IoT device per
+                            minute.</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">No_of_sent_packets_per_minutes
+                        <span class="tooltiptext">Number of packets sent from the IoT device per minute</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Avg_TTL
+                        <span class="tooltiptext">Calculating the average of the maximum hops needed by a message to
+                            reach the server from the IoT device. </span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Flow_volume
+                        <span class="tooltiptext">Calculating the total of download and upload bytes</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Flow_duration
+                        <span class="tooltiptext">Calculating the time (in minutes) between the first packet and the
+                            last packet in a flow.</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Dest_ip_avg_packet_length
+                        <span class="tooltiptext">The average of the packet’s length(in bytes) received by the dest_ IP
+                            , including the headers </span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Src_ip_avg_packet_length
+                        <span class="tooltiptext">The average of the packet’s length(in bytes) sent by dest_IP,
+                            including the headers sent by the destination IP.</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Flow_rate
+                        <span class="tooltiptext">Calculating ﬂow volume divided by the ﬂow duration (in seconds)</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">IsServer
+                        <span class="tooltiptext">Identify whether the destination IP address is a server or not </span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Max_dest_SSL_payload
+                        <span class="tooltiptext">The maximum payload size of the SSL sent from the destination IP
+                            address to the IoT device.</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Min_dest_SSL_payload
+                        <span class="tooltiptext">The minimum payload size of the SSL sent from the destination IP
+                            address to the IoT device.</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Avg_dest_SSL_payload
+                        <span class="tooltiptext">Calculate the average size of the SSL payload sent from the
+                            destination IP address to the IoT device.</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Std_dest_SSL_payload
+                        <span class="tooltiptext">Calculate the standard deviation size of the SSL payload sent from the
+                            destination IP address to the IoT device.</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Max_IoT_SSL_payload
+                        <span class="tooltiptext">The maximum size of the SSL payload sent from the IoT device to the
+                            destination IP address IoT device.</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Min_IoT_SSL_payload
+                        <span class="tooltiptext">The minimum size of the SSL payload sent from the IoT device to the
+                            destination IP address IoT device.</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Avg_IoT_SSL_payload
+                        <span class="tooltiptext">Calculate the average size of the SSL payload sent from the IoT device
+                            to the destination IP address.</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Std_IoT_SSL_payload
+                        <span class="tooltiptext">Calculate the standard deviation size of the SSL payload sent from the
+                            IoT device to the destination IP address.</span>
+                    </div>
+                </th>
+                <!-- <th>
+                    <div class="tooltip">IP flags to IOT (hex)
+                        <span class="tooltiptext">IP layer flags to IOT from this server</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">IP flags from IOT (hex)
+                        <span class="tooltiptext">IP layer flags from IOT to this server</span>
+                    </div>
+                </th> -->
+                <th>
+                    <div class="tooltip">Dest_TCP_Flags
+                        <span class="tooltiptext">The flag type of the packet in the TCP layer sent from the IP
+                            destination to the IoT device</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">IoT_TCP_Flags
+                        <span class="tooltiptext">The flag type of the packet in the TCP layer sends from the IoT device
+                            to the IP destination. </span>
+                    </div>
+                </th>
+                <!-- <th>
+                    <div class="tooltip">attack yes
+                        <span class="tooltiptext"></span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">attack type
+                        <span class="tooltiptext"></span>
+                    </div>
+                </th> -->
+            </tr>
+            {% for item in sourceData %}
+            <tr style="border-bottom: .2em solid black;">
+                <td style="border-right: .1em solid black; padding: 1em;">{{item[0]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[1]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[2]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[3]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[4]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[5]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[6]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[7]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[8]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[9]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[10]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[11]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[12]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[13]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[14]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[15]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[16]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[17]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[18]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[19]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[20]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[21]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[22]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[23]}}</td>
+                <!-- <td style="border-right: .1em solid black; padding: .1em;">{{item[24]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[25]}}</td> -->
+                <!-- <td style="border-right: .1em solid black; padding: .1em;">{{item[26]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[27]}}</td> -->
+                <!-- <script>
+                    document.write('< td style = "margin: 0%;padding: 0%;" > < img id = "element_{{item[0]}}" class = "buttonless" onclick = "goHomewithNewValue(this.id)" alt = "{{item[1]}}" src = ');
+                    document.write(escape('"../static/{{item[1]}}_{{item[4]}}.png"'));
+                    document.write('></td>');
+                </script> -->
+                <!-- {% if item[4]>-1 %}
+                <td style="margin: 0%;padding: 0%;"><img id="element_{{item[0]}}" class="buttonless imageBest" onclick="goHomewithNewValue(this.id)" alt="{{item[1]}}_{{item[4]}}" src='../static/{{item[1]}}_{{item[4]}}.png'></td>
+                {% endif %} {% if item[4]==-2 %}
+                <td style="margin: 0%;padding: 0%;"><img id="element_{{item[0]}}" class="buttonless" onclick="goHomewithNewValue(this.id)" alt="{{item[1]}}__" width=100 src="../static/_bad.png"></td>
+                {% endif %}{% if item[3]==1 and item[4]==-1 %}
+                <td><img id="element_{{item[0]}}" class="buttonless" onclick="goHomewithNewValue(this.id)" alt="{{item[1]}}__" src="../static/_processing.gif"></td>
+                {% endif %} {% if item[3]!=1 and item[4]==-1 %}
+                <td><img id="element_{{item[0]}}" class="buttonless" onclick="goHomewithNewValue(this.id)" alt="{{item[1]}}__" src="../static/_notrated.png"></td>
+                {% endif %} -->
+                <!-- <td>{{item[3]}}</td>
+                <td>{{item[4]}}</td> -->
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+    {% if overall_analysis|length > 0 %}
+    <div style="text-align: center;display: none;">
+        <table
+            style="border: 2px solid #15245e; margin-top:1em ;margin-left:auto;margin-right:auto;border-collapse: collapse;">
+
+            <tr style="border-bottom: .2em solid black;">
+                <th>
+                    <div class="tooltip">Sum_of_all_packets
+                        <span class="tooltiptext">calculates the total number of all sent and received packets per
+                            minute. </span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">No_TCP_handshake
+                        <span class="tooltiptext">calculates the total number of TCP handshake between the IoT device
+                            and the destination IP address in a traffic flow</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">TCP_reset
+                        <span class="tooltiptext">calculates the total number of
+                            terminated connections by the IoT device.
+                        </span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">No_of_IP_servers
+                        <span class="tooltiptext">Total number of IP servers that communicate with the IoT device</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">No_of_TCP_connection
+                        <span class="tooltiptext">Number of TCP connection in normal network flow </span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">No_UDP_connection
+                        <span class="tooltiptext">Number of UDP connections in normal network flow </span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">No_of_Dest_TCP_ports
+                        <span class="tooltiptext">Total number of destinations TCP ports a the normal network
+                            flow</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">No_IoT_TCP_ports
+                        <span class="tooltiptext">Total number of open IoT TCP ports a the normal network flow</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">No_of_Dest_UDP_ports
+                        <span class="tooltiptext">Total number of destinations UDP ports a the normal network
+                            flow</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">No_of_IoT_UDP_ports
+                        <span class="tooltiptext">Total number of open IoT UDP ports a the normal network flow</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">No_of_irresponsive_ports
+                        <span class="tooltiptext">Number of ports that do not respond to a connection </span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">No_of_DNS_request
+                        <span class="tooltiptext">Number of DNS queries in a normal network flow </span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">No_of_DNS_response
+                        <span class="tooltiptext">Number of DNS responses in normal network flow</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">No_of_NTP_request
+                        <span class="tooltiptext">Number of time requests in normal network flow</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">No_of_NTP_response
+                        <span class="tooltiptext">Number of time requests in normal network flow</span>
+                    </div>
+                </th>
+                <!-- <th><div class="tooltip">attack yes
+                    <span class="tooltiptext">cap file labeled as under attack</span>
+                </div></th>
+                <th><div class="tooltip">attack type
+                    <span class="tooltiptext">attack type</span>
+                </div></th> -->
+            </tr>
+
+            {% for item in overall_analysis %}
+            <tr style="border-bottom: .2em solid black;">
+                <td style="border-right: .1em solid black; padding: 1em;">{{item[0]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[1]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[2]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[3]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[4]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[5]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[6]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[7]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[8]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[9]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[10]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[11]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[12]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[13]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[14]}}</td>
+                <!-- <td style="border-right: .1em solid black; padding: .1em;">{{item[15]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[16]}}</td> -->
+
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
+
+    {% if dual_analysis|length > 0 %}
+    <div style="text-align: center;display: none;">
+        <table
+            style="border: 2px solid #15245e; margin-top:1em ;margin-left:auto;margin-right:auto;border-collapse: collapse;">
+
+            <tr style="border-bottom: .2em solid black;">
+                <th>
+                    <div class="tooltip">Src_IP
+                        <span class="tooltiptext">IP of the device that initialized the communication (either the IoT or
+                            the server)</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Src_Port
+                        <span class="tooltiptext">Communication port of the device that initialized the communication
+                            (either the IoT or the server)</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Dst_IP
+                        <span class="tooltiptext">IP of the device that received the communication (either the IoT or
+                            the server)</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Dst_port
+                        <span class="tooltiptext">Communication port of the device that received the communication
+                            (either the IoT or the server)</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Protocol
+                        <span class="tooltiptext">communication protocol (only TCP)</span>
+                    </div>
+                </th>
+                <!-- <th><div class="tooltip">reqIPflag
+                    <span class="tooltiptext">number of UDP connections</span>
+                </div></th>
+                <th><div class="tooltip">resIPflag
+                    <span class="tooltiptext">number of different open remote ports of all TCP connections</span>
+                </div></th> -->
+                <th>
+                    <div class="tooltip">Req_packet_Length
+                        <span class="tooltiptext">total size of the packet (including headers) of the request packet
+                            either from (IoT/ server)</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Res_packet_Length
+                        <span class="tooltiptext">total size (including headers) of the request packet either (IoT/
+                            server)
+                            respond total packet size (including headers).
+                        </span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Req_packet_Payload
+                        <span class="tooltiptext">the size of the actual data (excluding headers).</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Resp_packet_Payload
+                        <span class="tooltiptext">respond packet data payload size (excluding headers).</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Req_TTL
+                        <span class="tooltiptext">request Time-to-live (TTL) is a value for limiting the maximum period
+                            of time that a packet should exist on the network before being discarded.</span>
+                    </div>
+                </th>
+                <!-- <th><div class="tooltip">resttl
+                    <span class="tooltiptext">average number of dns responds per minute</span>
+                </div></th> -->
+                <th>
+                    <div class="tooltip">Resp_time_min
+                        <span class="tooltiptext">minimum response time (difference between request and response time as
+                            recorded by the capturing device) for that communication pattern.</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Resp_time_avg
+                        <span class="tooltiptext">average response time (difference between request and response time as
+                            recorded by the capturing device) for that communication pattern.
+                            average means summing all communication responses times as defined above and dividing the
+                            sum by their count.
+                        </span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Resp_time_max
+                        <span class="tooltiptext">Maximum response time (difference between request and response time as
+                            recorded by the capturing device) for that communication pattern.
+                            average means summing all communication responses times as defined above and dividing the
+                            sum by their count.
+                        </span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Repetition
+                        <span class="tooltiptext">The number of times that this communication pattern repeated in a pcap
+                            file.</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">Repetition_per_minute
+                        <span class="tooltiptext">The number of times that this communication pattern repeated per
+                            minute.</span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">IsServer
+                        <span class="tooltiptext">does one of the communication sides have a valid server name.</span>
+                    </div>
+                </th>
+                <!-- <th><div class="tooltip">device_on
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">application_on
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">application_idel
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">attack_yes
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">attack_type
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">alias_name
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">device_type
+                    <span class="tooltiptext">attack type</span>
+                </div></th>
+                <th><div class="tooltip">scenario
+                    <span class="tooltiptext">attack type</span>
+                </div></th> -->
+            </tr>
+
+            {% for item in dual_analysis %}
+            <tr style="border-bottom: .2em solid black;">
+                <td style="border-right: .1em solid black; padding: 1em;">{{item[0]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[1]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[2]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[3]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[4]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[5]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[6]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[7]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[8]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[9]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[10]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[11]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[12]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[13]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[14]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[15]}}</td>
+                <!-- <td style="border-right: .1em solid black; padding: .1em;">{{item[16]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[17]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[18]}}</td> -->
+                <!-- <td style="border-right: .1em solid black; padding: .1em;">{{item[19]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[20]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[21]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[22]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[23]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[24]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[25]}}</td>
+                <td style="border-right: .1em solid black; padding: .1em;">{{item[26]}}</td> -->
+
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+</body>
+
+</html>

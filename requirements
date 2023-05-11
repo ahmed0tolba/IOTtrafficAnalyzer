@@ -1,0 +1,8 @@
+flask
+flask_sqlalchemy
+pyshark
+xlsxwriter
+pandas
+openpyxl
+Flask-AutoIndex
+tqdm

@@ -1,0 +1,79 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='styles/style.css')}}">
+    <script type="text/javascript" src="{{url_for('static',filename='scripts/main.js')}}"></script>
+<title>Automated and Comprehensive IoT Traffic Analyzer and Feature Extraction Tool (IoT ACTAFE)</title>
+    <script>
+        function download_files(file_store_name_with_extension) {
+            // let file_store_name_with_extension = getCookie("file_store_name_with_extension");
+            window.open("/downloadfiles?file_store_name_with_extension=" + file_store_name_with_extension, "_blank");
+        }
+
+        function activate(file_store_name_with_extension) {
+            // document.cookie = "file_store_name_with_extension=" + file_store_name_with_extension;
+            download_files(file_store_name_with_extension);
+        }
+
+        function delete_record(file_store_name_with_extension) {
+            // document.cookie = "file_store_name_with_extension=" + file_store_name_with_extension;
+            
+            var postdata = "file_store_name_with_extension=" + file_store_name_with_extension;
+            var xhttp1 = new XMLHttpRequest();
+            xhttp1.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    if (this.responseText === "1") {
+                        location.reload();
+                    }                    
+                }
+            };
+            xhttp1.open("POST", "/delete_record?" + postdata);
+            xhttp1.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp1.send();
+        }
+
+    </script>
+</head>
+
+<body style="margin: 0%;">
+    <div style="height: 2em;background-color: #0058dd;">
+        <a href="/">
+            <div class="top_menu_item_div">Home</div>
+        </a>
+        <a href="/archive">
+            <div class="top_menu_item_div">Archive</div>
+        </a>
+        <a href="/dataset">
+            <div class="top_menu_item_div">Dataset</div>
+        </a>
+    </div>
+
+    <div style="text-align: center;">
+        {% if archive|length > 0 %}
+        <table
+            style="border: 2px solid #15245e; margin-top:1em ;margin-left:auto;margin-right:auto;border-collapse: collapse;">
+            <tr style="border-bottom: .2em solid black;">
+                <th style="text-align: center">
+                    Upload
+                </th>
+                <th style="text-align: center">
+                    IOTIP
+                </th>
+                <th style="text-align: center">
+                    Delete
+                </th>
+            </tr>
+
+            {% for item in archive %}
+            <tr style="border-bottom: .1em solid black; padding: 1em;">
+                <td style="text-align: center" onclick='activate("{{item[1]}}")' style="cursor: pointer;" class="hoverable">{{item[1]}}</td>
+                <td style="text-align: center">{{item[2]}}</td>
+                <td style="text-align: center" class="hoverablearchive" onclick='delete_record("{{item[1]}}")'><img  class="hoverablearchive" src="static/delete.png" alt="delete" width="10px">
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
+
+
+
+</body>

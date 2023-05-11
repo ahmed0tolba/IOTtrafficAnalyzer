@@ -1,0 +1,1274 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='styles/style.css')}}">
+    <script type="text/javascript" src="{{url_for('static',filename='scripts/main.js')}}"></script>
+    
+      <link rel="icon" type="image/png" href="{{url_for('static',filename='favicon.png')}}">
+
+<title>Automated and Comprehensive IoT Traffic Analyzer and Feature Extraction Tool (IoT ACTAFE)</title>
+
+<style>
+    table{
+        border: 1px solid;
+        background-color: rgba(241, 247, 255, 0.548);
+    }
+    thead{
+        font-weight: bold;
+        font-size: larger;
+        text-align: center;
+        border: 1px solid black;
+        background-color: blanchedalmond;
+    }
+    td{
+        border: 1px solid black;
+    }
+    ol{
+        font-size: 150%;
+    }
+
+</style>
+
+</head>
+
+<body style="margin: 0%;">
+    <div style="height: 2em;background-color: #0058dd;">
+        <a href="/">
+            <div class="top_menu_item_div">Home</div>
+        </a>
+        <a href="/archive">
+            <div class="top_menu_item_div">Archive</div>
+        </a>
+        <a href="/dataset">
+            <div class="top_menu_item_div">Dataset</div>
+        </a>
+    </div>
+    
+
+
+    <ol start="1"  type="1">
+        <li ><strong><span >Full Communication pattern mapping.csv:</span></strong></li>
+    </ol>
+
+The Flowing table</span><span >&nbsp;demonstrates the extracted feature in detail as follows:
+<ul  type="disc">
+    <li ><span >&nbsp;First column &ldquo;Feature&rdquo;: list all the features name of that represent one complete communication.&nbsp;</span></li>
+    <li ><span >Second column &ldquo;Description&rdquo;: describe the purpose of the feature and its role in the packet.</span></li>
+    <li ><span >Third column &ldquo;Usage&rdquo;: explain the objectives behind using such a feature.</span></li>
+    <li ><span >Fourth column &ldquo;Importance&rdquo;: explain the importance of using this feature or, in other words, why it is important in terms of the research.</span></li>
+</ul>
+&nbsp;
+<table >
+    <thead>
+        <tr>
+            <td >
+                No.
+            </td>
+            <td >
+                Feature
+            </td>
+            <td >
+                Description&nbsp;
+            </td>
+            <td >
+                Usage&nbsp;
+            </td>
+            <td >
+                Importance
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td >
+                1
+            </td>
+            <td >
+                src_IP
+            </td>
+            <td >
+                IP of the device that initialized the communication (either the IoT or the server)
+            </td>
+            <td >
+                Communication Analysis. Identifies the type and model of devices. Profile the device.
+            </td>
+            <td >
+                Identify the IoT device type
+            </td>
+        </tr>
+        <tr>
+            <td >
+                2
+            </td>
+            <td >
+                src_Port
+            </td>
+            <td >
+                Port number of the device that initialized the communication either from the IoT device or the IoT server
+            </td>
+            <td >
+                Communication Analysis. Identifies the type and model of devices. Profile the device.
+            </td>
+            <td >
+                Identify the IoT device type
+            </td>
+        </tr>
+        <tr>
+            <td >
+                3
+            </td>
+            <td >
+                dst_IP
+            </td>
+            <td >
+                IP address of the device that received the communication either from the IoT device or the IoT server
+            </td>
+            <td >
+                Communication Analysis. Identifies the type and model of devices. Profile the device.
+            </td>
+            <td >
+                Identify the IoT device type
+            </td>
+        </tr>
+        <tr>
+            <td >
+                4
+            </td>
+            <td >
+                dst-port
+            </td>
+            <td >
+                Communication port of the device that received the communication either from the IoT device or the IoT server
+            </td>
+            <td >
+                Communication Analysis. Identifies the type and model of devices. Profile the device.
+            </td>
+            <td >
+                Identify the IoT device type
+            </td>
+        </tr>
+        <tr>
+            <td >
+                5
+            </td>
+            <td >
+                Protocol
+            </td>
+            <td >
+                communication protocol (only TCP) either from the IoT device or the IoT server
+            </td>
+            <td >
+                Communication Analysis. Identifies the type and model of devices. Profile the device.
+            </td>
+            <td >
+                Identify the IoT device type
+            </td>
+        </tr>
+        <tr>
+            <td >
+                6
+            </td>
+            <td >
+                req_packet_Length
+            </td>
+            <td >
+                total size of the packet <strong>(including headers</strong>) of the request packet either from IoT device or IoT server
+            </td>
+            <td >
+                Communication Analysis. Identifies the type and model of devices. Profile the device.
+            </td>
+            <td >
+                1. Identify the IoT device type<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type
+            </td>
+        </tr>
+        <tr>
+            <td >
+                7
+            </td>
+            <td >
+                res_packet_Length
+            </td>
+            <td >
+                total size of the packet <strong>(including headers)</strong> of the request packet either from the IoT device or the IoT server
+            </td>
+            <td >
+                Communication Analysis. Identifies the type and model of devices. Profile the device.
+            </td>
+            <td >
+                1. Identify the IoT device type<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type
+            </td>
+        </tr>
+        <tr>
+            <td >
+                8
+            </td>
+            <td >
+                req_Payload
+            </td>
+            <td >
+                The size of the actual data (<strong>excluding headers</strong>)
+                Of the request packet either from the IoT device or the IoT server
+            </td>
+            <td >
+                Communication Analysis. Identifies the type and model of devices. Profile the device.
+            </td>
+            <td >
+                1. Identify the IoT device type<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type
+            </td>
+        </tr>
+        <tr>
+            <td >
+                9
+            </td>
+            <td >
+                resp_packet_Payload
+            </td>
+            <td >
+                The size of the actual data (<strong>excluding headers</strong>)
+                Of the respond packet either from the IoT device or the IoT server
+            </td>
+            <td >
+                Communication Analysis. Identifies the type and model of devices. Profile the device.
+            </td>
+            <td >
+                1. Identify the IoT device type<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type
+            </td>
+        </tr>
+        <tr>
+            <td >
+                10
+            </td>
+            <td >
+                req_TTL
+            </td>
+            <td >
+                request Time-to-live (TTL) is a value for limiting the maximum period of time that a packet should exist on the network before being discarded.
+            </td>
+            <td >
+                communication pattern recognition.
+                Each server communication usually has a single value for all communication.
+            </td>
+            <td >
+                Identify abnormal behavior i.e., attacks such as MITM detection or IP address spoofing detection
+            </td>
+        </tr>
+        <tr>
+            <td >
+                11
+            </td>
+            <td >
+                resp_time_min
+            </td>
+            <td >
+                minimum response time (difference between request and response time as recorded by the capturing device) for that communication pattern.
+            </td>
+            <td >
+                communication pattern recognition.
+                If time is below minimum time, it is likely that the server is closer now.
+            </td>
+            <td >
+                Identify abnormal behavior i.e., attacks such as MITM detection or IP address spoofing detection
+            </td>
+        </tr>
+        <tr>
+            <td >
+                12
+            </td>
+            <td >
+                resp_time_avg
+            </td>
+            <td >
+                average response time (difference between request and response time as recorded by the capturing device) for that communication pattern.
+                average means summing all communication responses times as defined above and dividing the sum by their count.&nbsp;
+            </td>
+            <td >
+                communication pattern recognition.
+                Communication Analysis.
+            </td>
+            <td >
+                Identify abnormal behavior i.e., attacks such as MITM detection or IP address spoofing detection
+            </td>
+        </tr>
+        <tr>
+            <td >
+                13
+            </td>
+            <td >
+                resp_time_max
+            </td>
+            <td >
+                Maximum response time (difference between request and response time as recorded by the capturing device) for that communication pattern.
+            </td>
+            <td >
+                communication pattern recognition.
+                If time is above maximum time, it is likely that there is slow internet detection.&nbsp;
+            </td>
+            <td >
+                Identify abnormal behavior i.e., attacks such as MITM attack has been established and data is delayed to being proceeded by a new node and passing through a longer route including the MITM device.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                14
+            </td>
+            <td >
+                repentance
+            </td>
+            <td >
+                The number of times that this communication pattern repeated in the pcap file.
+            </td>
+            <td >
+                communication pattern recognition.
+                The more this communication has repeated the more it is likely it represents a normal usage or an API communication.
+            </td>
+            <td >
+                1. Identify the IoT device type<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type
+            </td>
+        </tr>
+        <tr>
+            <td >
+                15
+            </td>
+            <td >
+                Repentance_per_minute
+            </td>
+            <td >
+                The number of times that this communication pattern repeated per minute.
+            </td>
+            <td >
+                communication pattern recognition.
+                The more this communication has repeated the more it is likely it represents a normal usage or an API communication.
+            </td>
+            <td >
+                1. Identify the IoT device type<br>
+                2. Identify current management status (if device is being controlled by app).
+            </td>
+        </tr>
+        <tr>
+            <td >
+                16
+            </td>
+            <td >
+                IsServer
+            </td>
+            <td >
+                does one of the communication sides have a valid server name.
+            </td>
+            <td >
+                Communication Analysis.
+                Devices from which hackers launch their attacks are very unlikely to have a valid server name as it requires payment which can be linked to the user. (some hosting sites allow untraceable payments by bitcoin and Ethereum)
+            </td>
+            <td >
+                1. Identify the IoT device type<br>
+                2. Identify current management status (if device is being controlled by app).
+            </td>
+        </tr>
+    </tbody>
+</table>
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+
+<a id="2">
+
+<ol start="2"  type="1">
+    <li ><strong><span >In depth IoT-Server per packet analysis.csv:</span></strong></li>
+</ol>
+
+Attacks on all sceniarios
+Our washing machine
+This is the first generated csv file which contains all the features extracted from analyzing every packet individually between the IoT device and the server/s or between the IoT device and other IoT device; in total we have 24 features.&nbsp;</span><span >The flowing table&nbsp;</span><span >demonstrates each extracted feature in detail as follows:
+<ul  type="disc">
+    <li ><span >First column &ldquo;Feature&rdquo;: list all the features name.&nbsp;</span></li>
+    <li ><span >Second column &ldquo;Description&rdquo;: describe the purpose of the feature and its role in the packet network.</span></li>
+    <li ><span >Third column &ldquo;Usage&rdquo;: explain the objectives behind using such a feature.</span></li>
+    <li ><span >Fourth column &ldquo;Importance&rdquo;: explain the importance of using this feature or, in other words, why it is important in terms of the research.</span></li>
+    <li ><span >Fourth column &ldquo;Network layer&rdquo;: specify which OSI (Open Systems Interconnection) layer that belong to such a feature.</span></li>
+</ul>
+&nbsp;
+<table style="">
+    <thead>
+        <tr>
+            <td >
+                No.
+            </td>
+            <td >
+                Feature
+            </td>
+            <td >
+                Description&nbsp;
+            </td>
+            <td >
+                Usage&nbsp;
+            </td>
+            <td >
+                Importance&nbsp;
+            </td>
+            <td >
+                OSI layer
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td >
+                1
+            </td>
+            <td >
+                Dest_IP
+            </td>
+            <td >
+                destination IP addresses that communicate with the IoT device.&nbsp;
+            </td>
+            <td >
+                Each IoT connects with a fixed set of IPs that rarely change except for streaming devices.
+            </td>
+            <td >
+                Identify the IoT servers, and cloud
+            </td>
+            <td >
+                Transport layer.
+                IP Layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                2
+            </td>
+            <td >
+                Dest_port_no
+            </td>
+            <td >
+                determines the port number of the destination IP address communication.
+            </td>
+            <td >
+                There is a usual range of communications ports for each device.
+            </td>
+            <td >
+                Identify the IoT device type
+            </td>
+            <td >
+                Transport layer.
+                TCP/UDP Layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                3
+            </td>
+            <td >
+                IoT_port_no
+            </td>
+            <td >
+                Determine the port number on the IoT device that communicates with the destination IP address.
+                e.g., port 9999
+            </td>
+            <td >
+                There is a usual range of communications ports for each device.
+            </td>
+            <td >
+                1. Identify the IoT device type<br>
+                2. Identify the IoT device behavior
+            </td>
+            <td >
+                Transport layer.
+                TCP/UDP Layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                4
+            </td>
+            <td >
+                Protocol
+            </td>
+            <td >
+                The application protocol of the communication. For example, DNS, FTP, HTTP, IMAP, etc.&nbsp;
+            </td>
+            <td >
+                For each destination IP address, determine the protocol of the communication with the IoT device.
+            </td>
+            <td >
+                1. Identify the IoT device type
+                2. Identify the IoT device behavior
+            </td>
+            <td >
+                Transport layer.
+                IP Layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                5
+            </td>
+            <td >
+                Send_receive_ratio
+            </td>
+            <td >
+                Calculating the ratio of the number of packets sent from the IoT device divided by the number of packets received from the server per minute in bytes
+            </td>
+            <td >
+                represents a pattern of sending to receiving&nbsp;
+            </td>
+            <td >
+                1. Identify the IoT device type<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type<br>
+                4. Identify abnormal behavior
+            </td>
+            <td >
+                Transport layer.
+                TCP/UDP Layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                6
+            </td>
+            <td >
+                No_of_received_packets_per_minutes
+            </td>
+            <td >
+                Calculating the number of packets received by the IoT device per minute.&nbsp;
+            </td>
+            <td >
+                In normal usage, the number of received packets is in a specific range.
+            </td>
+            <td >
+                1. Identify the IoT device type<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type<br>
+                4. Identify abnormal behavior
+            </td>
+            <td >
+                Transport layer.
+                TCP/UDP Layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                7
+            </td>
+            <td >
+                No_of_sent_packets_per_minutes
+            </td>
+            <td >
+                Number of packets sent from the IoT device per minute
+            </td>
+            <td >
+                In normal usage, the number of sent packets is in a specific range.
+            </td>
+            <td >
+                1. Identify the IoT device type<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type<br>
+                4. Identify abnormal behavior
+            </td>
+            <td >
+                Transport layer.
+                TCP/UDP Layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                8
+            </td>
+            <td >
+                Avg TTL
+            </td>
+            <td >
+                Calculating the average of the maximum hops needed by a message to reach the server from the IoT device.&nbsp;
+            </td>
+            <td >
+                Each server usually has a const number of TTL.
+            </td>
+            <td >
+                Identify abnormal behavior&nbsp;
+            </td>
+            <td >
+                Data Link layer.
+                IP Layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                9
+            </td>
+            <td >
+                Flow volume
+            </td>
+            <td >
+                Calculating the total of download and upload bytes
+            </td>
+            <td >
+                Used to calculate the flow rate.
+            </td>
+            <td >
+                1. Identify the IoT device behavior<br>
+                2. Identify human interaction type
+            </td>
+            <td >
+                Transport layer.
+                TCP/UDP Layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                10
+            </td>
+            <td >
+                Flow duration
+            </td>
+            <td >
+                Calculating the time (in minutes) between the first packet and the last packet in a flow.
+            </td>
+            <td >
+                Used to calculate the flow duration.
+            </td>
+            <td >
+                1. Identify the IoT device behavior<br>
+                2. Identify human interaction type
+            </td>
+            <td >
+                Data Link layer.
+                IP Layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                11
+            </td>
+            <td >
+                Dest_ip_avg_packet_length
+            </td>
+            <td >
+                The average of the packet&rsquo;s length, including the headers received by the destination IP from the IoT device.
+            </td>
+            <td >
+                IoT - API communications usually have a set of fixed packet length.
+            </td>
+            <td >
+                1. Identify the IoT device type<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type
+            </td>
+            <td >
+                Network layer.
+                IP layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                12
+            </td>
+            <td >
+                Src_ip_avg_packet_length
+            </td>
+            <td >
+                The average of the packet&rsquo;s length, including the headers sent by the destination IP to the IoT device.
+            </td>
+            <td >
+                IoT - API communications usually have a set of fixed packet length.
+            </td>
+            <td >
+                1. Identify the IoT device type<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type
+            </td>
+            <td >
+                Network layer.
+                IP layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                13
+            </td>
+            <td >
+                Flow_rate
+            </td>
+            <td >
+                Calculating ?ow volume divided by the ?ow duration (in seconds)
+            </td>
+            <td >
+                IoT devices have a set of bandwidth values for each state.
+            </td>
+            <td >
+                1. Identify the IoT device behavior
+            </td>
+            <td >
+                Transport layer.
+                TCP/UDP Layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                14
+            </td>
+            <td >
+                IsServer
+            </td>
+            <td >
+                Determine whether the destination IP address is a server or not&nbsp;
+            </td>
+            <td >
+                This feature is important to identify if the IoT device communicates with other IoT devices or with the server
+            </td>
+            <td >
+                1. Identify the IoT device type
+            </td>
+            <td >
+                Network layer.
+                IP layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                15
+            </td>
+            <td >
+                Max_dest_SSL_payload
+            </td>
+            <td >
+                The maximum payload size of the SSL sent from the destination IP address to the IoT device.
+            </td>
+            <td >
+                Communication pattern recognition
+            </td>
+            <td >
+                1. Identify the IoT device behavior<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type
+            </td>
+            <td >
+                Network layer.
+                SSL - UDP - HTTP layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                16
+            </td>
+            <td >
+                Min_dest_SSL_payload
+            </td>
+            <td >
+                The minimum payload size of the SSL sent from the destination IP address to the IoT device.
+            </td>
+            <td >
+                Communication pattern recognition&nbsp;
+            </td>
+            <td >
+                1. Identify the IoT device behavior<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type
+            </td>
+            <td >
+                Network layer.
+                SSL - UDP - HTTP layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                17
+            </td>
+            <td >
+                Avg_dest_SSL_payload
+            </td>
+            <td >
+                Calculate the average size of the SSL payload sent from the destination IP address to the IoT device.
+            </td>
+            <td >
+                Communication pattern recognition&nbsp;
+            </td>
+            <td >
+                1. Identify the IoT device behavior<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type
+            </td>
+            <td >
+                Network layer.
+                SSL - UDP - HTTP layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                18
+            </td>
+            <td >
+                Std_dest_SSL_payload
+            </td>
+            <td >
+                Calculate the standard deviation size of the SSL payload sent from the destination IP address to the IoT device.
+            </td>
+            <td >
+                Communication pattern recognition&nbsp;
+            </td>
+            <td >
+                1. Identify the IoT device behavior<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type
+            </td>
+            <td >
+                Network layer.
+                SSL - UDP - HTTP layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                19
+            </td>
+            <td >
+                Max_IoT_SSL_payload
+            </td>
+            <td >
+                The maximum size of the SSL payload sent from the IoT device to the destination IP address IoT device.
+            </td>
+            <td >
+                Communication pattern recognition&nbsp;
+            </td>
+            <td >
+                1. Identify the IoT device behavior<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type
+            </td>
+            <td >
+                Network layer.
+                SSL - UDP - HTTP layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                20
+            </td>
+            <td >
+                Min_IoT_SSL_payload
+            </td>
+            <td >
+                The minimum size of the SSL payload sent from the IoT device to the destination IP address IoT device.
+            </td>
+            <td >
+                Communication pattern recognition&nbsp;
+            </td>
+            <td >
+                1. Identify the IoT device behavior<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type
+            </td>
+            <td >
+                Network layer.
+                SSL - UDP - HTTP layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                21
+            </td>
+            <td >
+                Avg_IoT_SSL_payload
+            </td>
+            <td >
+                Calculate the average size of the SSL payload sent from the IoT device to the destination IP address.
+            </td>
+            <td >
+                Communication pattern recognition&nbsp;
+            </td>
+            <td >
+                1. Identify the IoT device behavior<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type
+            </td>
+            <td >
+                Network layer.
+                SSL - UDP - HTTP layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                22
+            </td>
+            <td >
+                Std_IoT_SSL_payload
+            </td>
+            <td >
+                Calculate the standard deviation size of the SSL payload sent from the IoT device to the destination IP address.
+            </td>
+            <td >
+                Communication pattern recognition&nbsp;
+            </td>
+            <td >
+                1. Identify the IoT device behavior<br>
+                2. Identify the IoT device behavior<br>
+                3. Identify human interaction type
+            </td>
+            <td >
+                Network layer.
+                SSL - UDP - HTTP layer.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                23
+            </td>
+            <td >
+                Dest_TCP_Flags
+            </td>
+            <td >
+                The flag type of the packet in the TCP layer send from the IP destination to the IoT device
+            </td>
+            <td >
+                determines the flag type from SYN to ACK
+            </td>
+            <td >
+                1. Identify the IoT device type<br>
+                2. Identify abnormal behavior
+            </td>
+            <td >
+                transport layer.
+                Layer TCP
+            </td>
+        </tr>
+        <tr>
+            <td >
+                24
+            </td>
+            <td >
+                IoT_TCP_Flags
+            </td>
+            <td >
+                The flag type of the packet in the TCP layer sends from the IoT device to the IP destination.&nbsp;
+            </td>
+            <td >
+                determines the flag type from SYN to ACK
+            </td>
+            <td >
+                1. Identify the IoT device type<br>
+                2. Identify abnormal behavior
+            </td>
+            <td >
+                transport layer.
+                Layer TCP
+            </td>
+        </tr>
+    </tbody>
+</table>
+<br>&nbsp;<br>&nbsp;
+&nbsp;
+
+</a>
+<a id="3">
+<ol start="3"  type="1">
+<li> <strong>
+General IoT traffic analysis within the network
+</strong></li></ol>
+The flowing t</span><span >able demonstrates the statistical features calculated from the fields and payload of the packets contained in the flow as follows:
+<ul  type="disc">
+    <li ><span >&nbsp;First column &ldquo;Feature&rdquo;: list all the features name of that represent one complete communication.&nbsp;</span></li>
+    <li ><span >Second column &ldquo;Description&rdquo;: describe the purpose of the feature and its role in the packet.</span></li>
+    <li ><span >Third column &ldquo;Usage&rdquo;: explain the objectives behind using such a feature.</span></li>
+    <li ><span >Fourth column &ldquo;Importance&rdquo;: explain the importance of using this feature or, in other words, why it is important in terms of the research.</span></li>
+</ul>
+&nbsp;
+<table >
+    <thead>
+        <tr>
+            <td >
+                No.
+            </td>
+            <td >
+                Feature
+            </td>
+            <td >
+                Description&nbsp;
+            </td>
+            <td >
+                Usage&nbsp;
+            </td>
+            <td >
+                Importance
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td >
+                1
+            </td>
+            <td >
+                Sum_of_all_packets
+            </td>
+            <td >
+                calculates the total number of all sent and received packets per minute that targeted the IoT device.&nbsp;
+            </td>
+            <td >
+                to determine the total number of packets in normal communication. However, change in number of packets may requires further inspection.&nbsp;
+            </td>
+            <td >
+                Identify abnormal behavior
+            </td>
+        </tr>
+        <tr>
+            <td >
+                2
+            </td>
+            <td >
+                No_TCP_handshake
+            </td>
+            <td >
+                calculates the total number of TCP handshake between the IoT device and the destination IP address in a traffic flow
+            </td>
+            <td >
+                to determine the total number of handshakes in normal communication. However, change in number of handshakes may requires further inspection.
+            </td>
+            <td >
+                Identify abnormal behavior
+            </td>
+        </tr>
+        <tr>
+            <td >
+                3
+            </td>
+            <td >
+                TCP_reset
+            </td>
+            <td >
+                calculates the total number of rejected connections by the IoT device.&nbsp;
+            </td>
+            <td >
+                to determine the total number of packets sent by the IoT that contain a set reset flag in normal communication.&nbsp;
+            </td>
+            <td >
+                Identify abnormal behavior, i.e., if someone is trying to implement reconnaissance against the IoT device.
+            </td>
+        </tr>
+        <tr>
+            <td >
+                4
+            </td>
+            <td >
+                No_of_IP_servers
+            </td>
+            <td >
+                Total number of IP servers that communicate with the IoT device
+            </td>
+            <td >
+                to determine the total number of independent servers that communicate with the IoT; either the IoT servers or any third-party servers
+            </td>
+            <td >
+                Identify the IoT behavior within the network, i.e., if the IoT device communicates with other IoT devices or with the server.&nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td >
+                5
+            </td>
+            <td >
+                No_of_TCP_connection
+            </td>
+            <td >
+                Number of TCP connection in normal network flow&nbsp;
+            </td>
+            <td >
+                to determine the total number of TCP connections that was established with the IoT. Each IoT has max of 1 or 2 TCP connections.
+                extra connections indicate that the device is being accessed by multiple users.
+            </td>
+            <td >
+                1. Identify the IoT behavior within the network
+                2. Identify abnormal behavior
+            </td>
+        </tr>
+        <tr>
+            <td >
+                6
+            </td>
+            <td >
+                No_UDP_connection
+            </td>
+            <td >
+                Number of UDP connections in normal network flow&nbsp;
+            </td>
+            <td >
+                to determine the total number of UDP connections that was established with the IoT. Each IoT has a max of 2 UDP connections except streaming connections.&nbsp;
+                extra connections indicate that the device is being accessed by multiple users.
+            </td>
+            <td >
+                1. Identify the IoT behavior within the network<br>
+                2. Identify abnormal behavior
+            </td>
+        </tr>
+        <tr>
+            <td >
+                7
+            </td>
+            <td >
+                No_of_Dest_TCP_ports
+            </td>
+            <td >
+                Total number of destinations TCP ports in a normal network flow
+            </td>
+            <td >
+                to determine the total number TCP ports, open on the remote server. Usually IoT connect to APIs on 80 and 443, new ports would require inspection.
+            </td>
+            <td >
+                1. Identify the IoT behavior within the network<br>
+                2. Identify abnormal behavior
+            </td>
+        </tr>
+        <tr>
+            <td >
+                8
+            </td>
+            <td >
+                No_IoT_TCP_ports
+            </td>
+            <td >
+                Total number of open IoT TCP ports in a normal network flow
+            </td>
+            <td >
+                to determine the total number of open TCP ports on the IoT device. IoT has a range of ports to start TCP connections.
+            </td>
+            <td >
+                1. Identify the IoT behavior within the network<br>
+                2. Identify abnormal behavior<br>
+                3. Identify the IoT device type
+            </td>
+        </tr>
+        <tr>
+            <td >
+                9
+            </td>
+            <td >
+                No_of_Dest_UDP_ports
+            </td>
+            <td >
+                Total number of destinations UDP ports in a normal network flow
+            </td>
+            <td >
+                to determine the total number of UDP ports open on remote servers. Usually IoTs connect to time and DNS servers on 123 and 53
+            </td>
+            <td >
+                1. Identify the IoT behavior within the network<br>
+                2. Identify abnormal behavior<br>
+                3. Identify the IoT device type
+            </td>
+        </tr>
+        <tr>
+            <td >
+                10
+            </td>
+            <td >
+                No_of_IoT_UDP_ports
+            </td>
+            <td >
+                Total number of open IoT UDP ports in a normal network flow
+            </td>
+            <td >
+                to determine the total number UDP ports open on the IoT. IoT has a range of ports to start UDP connections.
+            </td>
+            <td >
+                1. Identify the IoT behavior within the network<br>
+                2. Identify abnormal behavior<br>
+                3. Identify the IoT device type
+            </td>
+        </tr>
+        <tr>
+            <td >
+                11
+            </td>
+            <td >
+                No_of_irresponsive_ports
+            </td>
+            <td >
+                Number of ports that do not respond to a connection&nbsp;
+            </td>
+            <td >
+                to determine the total number of ports that didn&rsquo;t respond back to the communication attempt. Irresponsive ports are a definite indication of exploitation.
+            </td>
+            <td >
+                Identify abnormal behavior
+            </td>
+        </tr>
+        <tr>
+            <td >
+                12
+            </td>
+            <td >
+                No_of_DNS_request
+            </td>
+            <td >
+                Number of DNS queries in a normal network flow&nbsp;
+            </td>
+            <td >
+                to determine the total number of DNS requests initialized by the IoT. Connections reset are usually followed by DNS requests and NTP requests which usually occur before attacks.
+            </td>
+            <td >
+                Identify abnormal behavior
+            </td>
+        </tr>
+        <tr>
+            <td >
+                13
+            </td>
+            <td >
+                No_of_DNS_response
+            </td>
+            <td >
+                Number of DNS responses in a normal network flow
+            </td>
+            <td >
+                to determine the total number of DNS responses received by the IoT.
+            </td>
+            <td >
+                Identify abnormal behavior
+            </td>
+        </tr>
+        <tr>
+            <td >
+                14
+            </td>
+            <td >
+                No_of_NTP_request
+            </td>
+            <td >
+                Number of time requests in a normal network flow
+            </td>
+            <td >
+                to determine the total number of NTP requests initialized by the IoT.
+            </td>
+            <td >
+                Identify abnormal behavior
+            </td>
+        </tr>
+        <tr>
+            <td >
+                15
+            </td>
+            <td >
+                No_of_NTP_response
+            </td>
+            <td >
+                Number of time requests in a normal network flow
+            </td>
+            <td >
+                to determine the total number of NTP responses received by the IoT.
+            </td>
+            <td >
+                Identify abnormal behavior
+            </td>
+        </tr>
+    </tbody>
+</table>
+</a>
+</body>
+</html>
