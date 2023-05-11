@@ -1,0 +1,356 @@
+th {
+    border-right: .1em solid black;
+    padding: .2em;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+    /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+#intro {
+    background-color: #e9f2ff;
+    margin: auto;
+    width: 60%;
+    min-width: 900px;
+    max-width: 1920px;
+    border-radius: 10px;
+    border-color: rgb(172, 182, 182);
+    border-width: 2px;
+    border-style: solid;
+    padding: 20px;
+    margin-bottom : 1em;
+    font-size:14px;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    //display: flex;
+    justify-content: center;
+}
+
+
+#divform {
+    background-color: #e9f2ff;
+    margin: auto;
+    width: 60%;
+    min-width: 900px;
+    max-width: 1920px;
+    border-radius: 10px;
+    border-color: rgb(172, 182, 182);
+    border-width: 2px;
+    border-style: solid;
+    padding: 20px;
+    font-size:14px;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    //justify-content: center;
+}
+
+#processing {
+    display: none;
+    margin: auto;
+    margin-top: 10%;
+    width: 10%;
+    justify-content: center;
+
+}
+#analysis{
+    margin: auto;
+    margin-top: 5%;
+    width: 40%;
+    justify-content: center;
+}
+#downloadcommunicationpattern,#downloadindepthpacketanalysis,#downloadnetworktrafficanalysis{
+    //display: none;
+    width:50px;
+}
+#generate_dataset_button,#download_table{
+    display: none;
+
+}
+#divform,
+form,
+input {
+    //font-size: 16px;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    
+}
+input {
+display:initial;
+}
+@media screen and (min-width: 900px) {
+ input{
+ font-size:1.2em;
+ }
+}
+@media screen and (min-width: 801px) and (max-width:900px) {
+ input{
+ color:green;
+ font-size:3em;
+ }
+}
+@media screen and (min-width: 701px) and (max-width:800px) {
+ input{
+ color:blue;
+ font-size:3em !important;
+ }
+}
+@media screen and (min-width: 601px) and (max-width:700px) {
+ input{
+ color:yellow;
+ font-size:3em;
+ }
+}
+@media screen and (min-width: 501px) and (max-width:600px) {
+ input{
+ color:orange;
+ font-size:4em;
+ }
+}
+@media screen and (min-width: 401px) and (max-width:500px) {
+ input{
+ color:brown;
+ font-size:5em;
+ }
+}
+@media screen and (min-width: 100px) and (max-width:400px) {
+ input{
+ color:purple;
+ font-size:5em;
+ }
+}
+
+form{
+display:initial;
+}
+
+#submit #downloadfiles {
+    padding: .2em;
+    margin: 0 auto;
+    margin-top: .5em;
+    //font-size: 120%;
+    //display: block;
+}
+
+/* CSS */
+.buttonx {
+    background-color: #0a6bff;
+    border-radius: 4px;
+    border: 0;
+    box-shadow: rgba(1, 60, 136, .5) 0 -1px 3px 0 inset, rgba(0, 44, 97, .1) 0 3px 6px 0;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    //display: inherit;
+    font-family: "Space Grotesk", -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-weight: 700;
+    margin: 0;
+    padding: 4px 5px;
+    position: relative;
+    text-align: center;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: baseline;
+    transition: all .2s cubic-bezier(.22, .61, .36, 1);
+}
+
+.buttonx:hover:enabled {
+    background-color: #065dd8;
+    transform: translateY(-2px);
+}
+
+.buttonx:disabled {
+    background-color: #a0c8ff;
+    cursor: not-allowed;
+}
+
+input#file {
+    background-color: #6ea8ff;
+    border-radius: 4px;
+    border: 0;
+    box-shadow: rgba(1, 60, 136, .5) 0 -1px 3px 0 inset, rgba(0, 44, 97, .1) 0 3px 6px 0;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    //display: inherit;
+    font-family: "Space Grotesk", -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+@media (min-width: 768px) {
+    .buttonx {
+        min-width: 150px;
+    }
+}
+
+/* #divsubmit #divdownloadfiles{
+    display: block;
+    text-align: center;
+} */
+.top_menu_item_div {
+    color: #fff;
+    display: block;
+    text-align: center;
+    float: left;
+    margin-left: 1em;
+    margin-right: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-top: .3em;
+    height: 1.7em;
+    background-color: #0a6cff00;
+    border-radius: 0em;
+    transition: all .2s ease-in-out;
+    
+}
+.top_menu_item_div:hover{
+    color: #fbff00;
+    cursor: pointer;
+    background-color: #12326d9d;
+    border-radius: .5em;
+}
+
+tr.validip {
+    border-bottom: .2em solid black;
+    cursor: pointer;
+}
+
+tr.validip:hover {
+    background-color: #5691ff;
+    transition: all .2s cubic-bezier(.22, .61, .36, 1);
+}
+
+select {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+option {
+    padding: 0 30px 0 10px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    background: rgb(197, 197, 197);
+    border-top: rgb(117, 117, 117) solid 1px;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    pointer-events: none;
+    order: 2;
+    z-index: 1;
+    transition: all .4s ease-in-out;
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+
+}
+
+option:hover {
+    background: #666;
+}
+
+.select:focus,
+option {
+    position: relative;
+    pointer-events: all;
+}
+
+input:checked+label {
+    order: 1;
+    z-index: 2;
+    background: #666;
+    border-top: none;
+    position: relative;
+}
+
+td.hoverable{
+    transition: all .2s ease-in-out;
+}
+td.hoverable:hover{
+    background: rgb(171, 210, 255);
+    cursor: pointer;
+}
+
+img.hoverablearchive{
+    width: 20px;
+    cursor: pointer;
+}
+
+img.hoverable{
+    width: 150%;
+    
+    transition: all .2s ease-in-out;
+}
+img.hoverable:hover{
+    width: 32px;
+    cursor: pointer;
+}
+
+input:checked+label:after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid white;
+    position: absolute;
+    right: 10px;
+    top: calc(50% - 2.5px);
+    pointer-events: none;
+    z-index: 3;
+}
+
+input:checked+label:before {
+    position: absolute;
+    right: 0;
+    height: 40px;
+    width: 40px;
+    content: '';
+    background: #666;
+}
+
+.downloadbutton{
+    width:2em;
+    height:2em;
+}
+
+img.report{
+    width: 40px;
+    text-align: center;
+}
+
+table.report{
+    background-color: #f3f8fc;
+    font-size: 1.3em;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: #003e96;
+    border-radius: 20px;
+    padding:20px;
+}
+
+tr.report{
+    height: 4em;
+}
