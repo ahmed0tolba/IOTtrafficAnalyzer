@@ -381,9 +381,11 @@ def post_file_for_analysing_2():
     # print("process")
     IOTIP = request.args['IOTIP']
     f = request.files['file']
-    file_store_name_with_extension = secure_filename(request.args['devicetype']+str(datetime.now()))+".pcapng"
+    # file_store_name_with_extension = secure_filename(request.args['devicetype']+str(datetime.now()))+".pcapng"
+    file_store_name_with_extension = secure_filename(f.filename+str(datetime.now()))+".pcapng"
     f.save("uploadedFiles/"+file_store_name_with_extension)
-    status = Analyse_cap_threads_controller_2(IOTIP,request.args['devicetype'],"uploadedFiles/"+file_store_name_with_extension)
+    # status = Analyse_cap_threads_controller_2(IOTIP,request.args['devicetype'],"uploadedFiles/"+file_store_name_with_extension)
+    status = Analyse_cap_threads_controller_2(IOTIP,f.filename,"uploadedFiles/"+file_store_name_with_extension)
     res = make_response(render_template('classifynormal.html',status=status)) 
     res.set_cookie('file_store_name_with_extension',file_store_name_with_extension) 
     res.set_cookie('viewed_results','0') 
@@ -425,4 +427,4 @@ def check_ip_valid():
   return "0" 
 
 if __name__ == '__main__': 
-  application.run(debug=True,host="0.0.0.0",use_reloader=True,port=8000)
+  application.run(debug=True,host="0.0.0.0",use_reloader=False,port=8000)

@@ -98,6 +98,7 @@ import statistics
 # 24 - TCP layer flags to IOT from this server (hex) - assume it was always the same throught the conversation (and it is not)
 # 25 - TCP layer flags from IOT to this server (hex) - assume it was always the same throught the conversation (and it is not)
 
+
 def generate3rdFile(sourceData_df,dualComm_df):
 
   print("Processing file 3")
@@ -150,7 +151,9 @@ def generate3rdFile(sourceData_df,dualComm_df):
     # sourceData_df['Repetitions_per_minute'] = '_'.join(dualComm_df.loc[indexes_list_dualComm_df,'Repetition_per_minute'].astype(str)) 
   return dataset_df
 
-def analyseDeviceIP(IOTIP,studyFile,device_type='',device_on=True,application_on=True,application_idel=True,attack_yes=False,attack_type='',alias_name='',scenario='',savename=''):
+
+def analyseDeviceIP2(IOTIP,studyFile,device_type='',device_on=True,application_on=True,application_idel=True,attack_yes=True,attack_type='',alias_name='',scenario='',savename=''):
+
   sourceData_df_message = "1" # return message
   valid_ips = [] #
   invalid_ips = [] #  
@@ -203,7 +206,7 @@ def analyseDeviceIP(IOTIP,studyFile,device_type='',device_on=True,application_on
   # string"attack type" # DOS , 
   # End of initialize xlsx column titles, but file is still open
   
-  # sleep time ???
+  # sleep time ??? 
   # cipher suit ???
 
   # excel 2
@@ -220,7 +223,7 @@ def analyseDeviceIP(IOTIP,studyFile,device_type='',device_on=True,application_on
                   ,"Avg_IoT_SSL_payload","Std_IoT_SSL_payload"
                   # ,"IP flags to IOT","IP flags from IOT"
                   ,"Dest_TCP_Flags","IoT_TCP_Flags"
-                  # ,"attack yes","attack type"
+                  ,"attack","attack type", "device type"
                   ]
   # print('Output is',column_names)
   
@@ -228,7 +231,7 @@ def analyseDeviceIP(IOTIP,studyFile,device_type='',device_on=True,application_on
   capdest = pyshark.FileCapture(studyFile, display_filter="ip.dst == "+ IOTIP
                                 )                           
   numberOf_Packets = len([packet for packet in capdest]) # number of packets to device
-  print(numberOf_Packets)
+  print("numberOf_Packets" , numberOf_Packets)
   if numberOf_Packets==0:
     sourceData_df_message= "invalid ip"
     print(sourceData_df_message)
@@ -259,7 +262,7 @@ def analyseDeviceIP(IOTIP,studyFile,device_type='',device_on=True,application_on
     
   package_duration_seconds = float(capdest[numberOf_Packets-1].sniff_timestamp) - float(capdest[0].sniff_timestamp) # capture duration in seconds , last package date - first package date
   package_duration_minutes = round(package_duration_seconds / 60,5) # file duration in minutes
-  print("Started file 1 generation")
+  print("hi")
   idx = 0 
   idy = 0
 
@@ -368,11 +371,14 @@ def analyseDeviceIP(IOTIP,studyFile,device_type='',device_on=True,application_on
           # print(packet1.layers)
           if len(packet1.layers)==3 and "TCP" in str(packet1.layers): # case 1 : 3 layers only and one of them is called TCP
           # 24 - TCP layer flags to IOT from this server (hex) - assume it was always the same throught the conversation (and it is not)
-            # print(packet1)
+            #print(packet1)
             if os.name == "nt":
               TCP_flag_to_IOT = float(str(packet1.layers[2]).splitlines()[12].split("0x")[1].split()[0]) 
             else:
-              TCP_flag_to_IOT = float(str(packet1.layers[2]).splitlines()[12].split("0x")[1].split()[0]) 
+              try:              
+                TCP_flag_to_IOT = float(str(packet1.layers[2]).splitlines()[12].split("0x")[1].split()[0])
+              except: 
+                TCP_flag_to_IOT = -1
             # print("hi ",TCP_flag_to_IOT)          
 
             layer2lines = str(packet1.layers[2]).splitlines()
@@ -413,7 +419,10 @@ def analyseDeviceIP(IOTIP,studyFile,device_type='',device_on=True,application_on
             if os.name == "nt":
               TCP_flag_to_IOT = float(str(packet1.layers[2]).splitlines()[12].split("0x")[1].split()[0])  # 9 in colab
             else:
-              TCP_flag_to_IOT = float(str(packet1.layers[2]).splitlines()[12].split("0x")[1].split()[0])  # 12 in ubuntu server
+              try:
+                TCP_flag_to_IOT = float(str(packet1.layers[2]).splitlines()[12].split("0x")[1].split()[0])  # 12 in ubuntu server
+              except:
+                TCP_flag_to_IOT = -1 
             
             ssl_layer_packekets_for_this_ip += 1
             # if len(packet1.layers)>4:
@@ -503,7 +512,7 @@ def analyseDeviceIP(IOTIP,studyFile,device_type='',device_on=True,application_on
 
         
         if NumOfPackets_Sent2IP == 0 :
-          receiveSend_RatioIP = float('inf')
+          receiveSend_RatioIP = -1 # float('inf')
         elif (NumOfPackets_Sent2IP!=1):       
 # 4 - packets count received at IOT / sent to this server (packet count/ packet count) - IP layer  
           receiveSend_RatioIP =  round(NumOfPackets_ReceivedIP / NumOfPackets_Sent2IP,2) # receive send ratio
@@ -557,7 +566,10 @@ def analyseDeviceIP(IOTIP,studyFile,device_type='',device_on=True,application_on
             if os.name == "nt":
               TCP_flag_from_IOT = float(str(packet1.layers[2]).splitlines()[12].split("0x")[1].split()[0])
             else:
-              TCP_flag_from_IOT = float(str(packet1.layers[2]).splitlines()[12].split("0x")[1].split()[0]) # 9 in colab
+              try:
+                TCP_flag_from_IOT = float(str(packet1.layers[2]).splitlines()[12].split("0x")[1].split()[0]) # 9 in colab
+              except:
+                TCP_flag_from_IOT = -1
             layer2lines = str(packet1.layers[2]).splitlines()
             # print(len(layer2lines))
 
@@ -669,10 +681,11 @@ def analyseDeviceIP(IOTIP,studyFile,device_type='',device_on=True,application_on
         if [resolve_hostname(packet.ip.src)[0] , srcport , packet.transport_layer , dstport,receiveSend_RatioIP,avg_NumOfPackets_Sent2IP_PerMinute,avg_NumOfPackets_RecievedIP_PerMinute,avgTTL,avg_PacketsSize_Sent2IP,avg_PacketsSize_RecievedIP] not in sourceData: # if pattern not in sourceData
           sourceData.append([resolve_hostname(packet.ip.src)[0] , srcport , packet.transport_layer , dstport, receiveSend_RatioIP,avg_NumOfPackets_Sent2IP_PerMinute,avg_NumOfPackets_RecievedIP_PerMinute,avgTTL,avg_PacketsSize_Sent2IP,avg_PacketsSize_RecievedIP]) # add pattern to sourceData
           
-          if attack_yes and not resolve_hostname(packet.ip.src)[1] and receiveSend_RatioIP == float('inf'):
-            attack_yes_processed = True
+          if attack_yes and  receiveSend_RatioIP == -1: #  not resolve_hostname(packet.ip.src)[1] and
+            attack_yes_processed = 1
+            attack_type = "reconnaissance"
           else:
-            attack_yes_processed = False
+            attack_yes_processed = 0
 
           if attack_yes_processed:
             attack_type_processed = attack_type
@@ -687,7 +700,7 @@ def analyseDeviceIP(IOTIP,studyFile,device_type='',device_on=True,application_on
                                     TLS_length_max_Sent_From_IOT,TLS_length_min_Sent_From_IOT,TLS_length_avg_Sent_From_IOT,TLS_length_std_Sent_From_IOT,
                                     # IP_flag_to_IOT,IP_flag_from_IOT,
                                     IP_flag_to_IOT,IP_flag_from_IOT,
-                                    # attack_yes_processed,attack_type_processed
+                                    attack_yes_processed,attack_type_processed,device_type
                                     ] # add pattern to sourceData
           # store values in the xlsx rows
           idy+=1 # row number # all servers counter
@@ -844,23 +857,23 @@ def analyseDeviceIP(IOTIP,studyFile,device_type='',device_on=True,application_on
   device_Recieved_Data_UDP = []
   device_Sent_Data_UDP = []
   
-  attack_yes_summary = False
+  attack_yes_summary = 0
   attack_type_summary = ""
 
-  if initialized_tcp_per_minute > 10:
-    attack_yes_summary = True
-    attack_type_summary = "DOS"
-  
   if numberOf_packets_tcp_reset > 2 and initialized_tcp_per_minute < 10:
-    attack_yes_summary = True
+    attack_yes_summary = 1
     attack_type_summary = "reconnaissance"
   
   device_Ports_irresponsive = len(sourceData_df.loc[sourceData_df['Send_receive_ratio']==inf]['IoT_port_no'].value_counts())
 
   if device_Ports_irresponsive > 0:
-    attack_yes_summary = True
+    attack_yes_summary = 1
     attack_type_summary = "reconnaissance"
-    
+
+  if initialized_tcp_per_minute > 10:
+    attack_yes_summary = 1
+    attack_type_summary = "DOS"
+
   overall_analysis = {
     "Sum_of_all_packets":  all_packets_recieved_per_minute,
     "No_TCP_handshake": initialized_tcp_per_minute ,
@@ -877,8 +890,8 @@ def analyseDeviceIP(IOTIP,studyFile,device_type='',device_on=True,application_on
     "No_of_DNS_response": packets_dns_resp_per_minute,
     "No_of_NTP_request": packets_ntp_req_per_minute,
     "No_of_NTP_response": packets_ntp_resp_per_minute,
-    # "attack yes" : attack_yes_summary,
-    # "attack type" : attack_type_summary,
+    "attack" : attack_yes_summary,
+    "attack type" : attack_type_summary,
 
   }
 
@@ -892,20 +905,19 @@ def analyseDeviceIP(IOTIP,studyFile,device_type='',device_on=True,application_on
       for key in overall_analysis.keys():
           f.write("%s,%s\n"%(key,overall_analysis[key]))
   print("\n")
+
+
+  packets,dualComm_unique,dualComm_df = analyseDeviceIPDualCommunications2(IOTIP,studyFile,device_on,application_on,application_idel,attack_yes,attack_type,alias_name,device_type,scenario,savename)
   
-
-  packets,dualComm_unique,dualComm_df = analyseDeviceIPDualCommunications(IOTIP,studyFile,device_on,application_on,application_idel,attack_yes,attack_type,alias_name,device_type,scenario,savename)
-
   generate3rdFile_df = generate3rdFile(sourceData_df,dualComm_df)
   print(generate3rdFile_df)
-   
+
   if savename=='':
     generate3rdFile_df.to_csv(studyFile+'-IoT traffic Dataset.csv', index=False)
   else:
     generate3rdFile_df.to_csv(savename+'-IoT traffic Dataset.csv', index=False)
 
-
-  return sourceData_df,overall_analysis,sourceData_df_message,valid_ips,generate3rdFile_df
+  return sourceData_df,overall_analysis,sourceData_df_message,valid_ips
 
 # print("\nData for plug on , plugoff-noapp-slowhttptest-success")
 # destIP = "10.42.0.226" # lamp
@@ -914,9 +926,9 @@ def analyseDeviceIP(IOTIP,studyFile,device_type='',device_on=True,application_on
 # sourceData_df,overall_analysis = analyseDeviceIP(destIP,studyFile)
 # print(sourceData_df,overall_analysis) # analyse
 
-def analyseDeviceIPDualCommunications(IOTIP,studyFile,device_on=True,application_on=True,application_idel=True,attack_yes=False,attack_type='',alias_name='',device_type='',scenario='',savename=''):
+def analyseDeviceIPDualCommunications2(IOTIP,studyFile,device_on=True,application_on=True,application_idel=True,attack_yes=False,attack_type='',alias_name='',device_type='',scenario='',savename=''):
 
-  print(" warning: analysing only first 100, because life is short, Started file 2")
+  print(" warning: analysing only first 100, because life is short")
 
   # column_names is a dataframe column title (not for excel but inside code).
   column_names_unique = ["Src_IP" ,"Src_Port", "Dst_IP" ,"Dst_port","Protocol"]
@@ -926,7 +938,9 @@ def analyseDeviceIPDualCommunications(IOTIP,studyFile,device_on=True,application
                   # ,"resttl"
                   ,"Resp_time_min","Resp_time_avg","Resp_time_max", "Repetition" 
                   ,"Repetition_per_minute","IsServer"
-                  # ,"device_on","application_on","application_idel","attack_yes","attack_type","alias_name","device_type","scenario"
+                  # ,"device_on","application_on","application_idel"
+                  ,"attack","attack_type"
+                  #,"alias_name","device_type","scenario"
                   ]
   # print('Output is',column_names)
   
@@ -986,6 +1000,7 @@ def analyseDeviceIPDualCommunications(IOTIP,studyFile,device_on=True,application
         tcp_seq_num_req = int(str(packet.layers[2]).splitlines()[6].split()[2])   # 5 in colab 
         tcp_nxt_seq_num_req = int(str(packet.layers[2]).splitlines()[8].split()[3])  # 6 in colab 
         tcp_ack_num_req = int(str(packet.layers[2]).splitlines()[9].split()[2]) # 7 in colab 
+
       else:
         try:              
           flag_req = int(str(packet.layers[2]).splitlines()[12].split("0x")[1].split()[0])  # 9 in colab           
@@ -994,7 +1009,7 @@ def analyseDeviceIPDualCommunications(IOTIP,studyFile,device_on=True,application
         tcp_seq_num_req = int(str(packet.layers[2]).splitlines()[6].split()[2])   # 5 in colab 
         tcp_nxt_seq_num_req = int(str(packet.layers[2]).splitlines()[8].split()[3])  # 6 in colab 
         tcp_ack_num_req = int(str(packet.layers[2]).splitlines()[9].split()[2]) # 7 in colab 
-      
+        
       packets.append([resolve_hostname(packet.ip.src)[0] , srcport , resolve_hostname(packet.ip.dst)[0], dstport, packet.transport_layer,tcp_nxt_seq_num_req])
 
   uniqueCount=0
@@ -1052,10 +1067,14 @@ def analyseDeviceIPDualCommunications(IOTIP,studyFile,device_on=True,application
           tcp_nxt_seq_num_req = int(str(packet.layers[2]).splitlines()[8].split()[3])  # 6 in colab 
           tcp_ack_num_req = int(str(packet.layers[2]).splitlines()[9].split()[2])   # 7 in colab 
         else:
-          flag_req = int(str(packet.layers[2]).splitlines()[12].split("0x")[1].split()[0])  # 9 in colab 
+          try:
+            flag_req = int(str(packet.layers[2]).splitlines()[12].split("0x")[1].split()[0])  # 9 in colab 
+          except:
+            flag_req = -1 
           tcp_seq_num_req = int(str(packet.layers[2]).splitlines()[6].split()[2])  # 5 in colab 
           tcp_nxt_seq_num_req = int(str(packet.layers[2]).splitlines()[8].split()[3])  # 6 in colab 
-          tcp_ack_num_req = int(str(packet.layers[2]).splitlines()[9].split()[2])   # 7 in colab 
+          tcp_ack_num_req = int(str(packet.layers[2]).splitlines()[9].split()[2])   # 7 in colab
+        
         req_time = packet.sniff_timestamp
         length_req = packet.captured_length
         ttl_req = packet['IP'].ttl
@@ -1110,7 +1129,8 @@ def analyseDeviceIPDualCommunications(IOTIP,studyFile,device_on=True,application
                   flag_res = -1 
                 tcp_seq_num_res = int(str(cap[aftercount].layers[2]).splitlines()[6].split()[2])  # 5 in colab 
                 tcp_nxt_seq_num_res = int(str(cap[aftercount].layers[2]).splitlines()[8].split()[3]) # 6 in colab 
-                tcp_ack_num_res = int(str(cap[aftercount].layers[2]).splitlines()[9].split()[2])  # 7 in colab 
+                tcp_ack_num_res = int(str(cap[aftercount].layers[2]).splitlines()[9].split()[2])  # 7 in colab
+                 
               res_time = cap[aftercount].sniff_timestamp
               req_res_time = float(res_time) - float(req_time)
 
@@ -1168,10 +1188,10 @@ def analyseDeviceIPDualCommunications(IOTIP,studyFile,device_on=True,application
   for i in range(0,len(dualComm_unique)):
     isServer = resolve_hostname(dualComm_unique[i][0])[1] or resolve_hostname(dualComm_unique[i][2])[1]
 
-    under_attack_detected = False
+    under_attack_detected = 0
     attack_type_detected =  ''
     if dualComm_unique[i][8] == 0:
-      under_attack_detected = True
+      under_attack_detected = 1
       attack_type_detected =  'reconnaissance'
 
     if (dualComm_unique_column_list_repeatance_endtime[i] != dualComm_unique_column_list_repeatance_starttime[i]):
@@ -1186,8 +1206,10 @@ def analyseDeviceIPDualCommunications(IOTIP,studyFile,device_on=True,application
                           #,dualComm_unique[i][10],dualComm_unique[i][12],dualComm_unique[i][12]
                           ,dualComm_unique_column_list_time_res_min[i]
                           ,float(dualComm_unique_column_list_time_res_sum[i])/float(dualComm_unique_column_list_repeatance[i])
-                          ,dualComm_unique_column_list_time_res_max[i],dualComm_unique_column_list_repeatance[i] , repeatance_per_minute , isServer , 
-                          # device_on,application_on,application_idel,under_attack_detected,attack_type_detected,alias_name,device_type,scenario
+                          ,dualComm_unique_column_list_time_res_max[i],dualComm_unique_column_list_repeatance[i] , repeatance_per_minute , isServer
+                          #,device_on,application_on,application_idel
+                          ,under_attack_detected,attack_type_detected
+                          #,alias_name,device_type,scenario
                           ]  
 
           # print(flag_req,tcp_seq_num_req,tcp_nxt_seq_num_req,tcp_ack_num_req)
@@ -1214,7 +1236,7 @@ def analyseDeviceIPDualCommunications(IOTIP,studyFile,device_on=True,application
   # worksheet.write(0, 0,"IP")
   # worksheet.write(idy, 0,resolve_hostname(packet.ip.src)[0])
   # workbook.close()
-  # print(dualComm_df)
+  print(dualComm_df)
   return packets,dualComm_unique,dualComm_df
 
 # print("\nData for cam no app idle")

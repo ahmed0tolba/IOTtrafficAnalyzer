@@ -181,9 +181,7 @@
                 postdata += "&devicetype=" + document.getElementById("devicetype").value;
             }
 
-
             // console.log("File is sent and being proceessed, when finished will be shown");
-
 
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
@@ -461,6 +459,7 @@
         document.getElementById("IOTIPmessage").innerHTML = "Please select one of the valid ips,<br> The last valid is selected by default.";
     </script>
     <div style="text-align: center;">
+        <p style="color: red;"> You entered an invalid IP Address, Valid IPs are below, Please select 1 of them. </p>
         <table
             style="border: 2px solid #15245e; margin-top:1em ;margin-left:auto;margin-right:auto;border-collapse: collapse;">
 
