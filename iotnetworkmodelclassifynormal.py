@@ -224,9 +224,9 @@ def analyseDeviceIP2(IOTIP,studyFile,device_type='',device_on=True,application_o
     if packets_iot_df.loc[index_packets_iot,"processed"] == False and (packets_iot_row_ref['dst_ip']==IOTIP or packets_iot_row_ref['dst_ip']=="IoT"):
 
         # extract row repeatance from packets_iot_df   &&    extract row respond repeatance from packets_iot_df
-        capdst_row_ref_repeated_df = packets_iot_df[ ( packets_iot_df['src_ip'] == resolve_hostname(packets_iot_row_ref['src_ip'])[0]) & ( packets_iot_df['src_prt'] == packets_iot_row_ref['src_prt']) & 
+        capdst_row_ref_repeated_df = packets_iot_df[ ( packets_iot_df['src_ip'] == packets_iot_row_ref['src_ip']) & ( packets_iot_df['src_prt'] == packets_iot_row_ref['src_prt']) & 
                                           (packets_iot_df['protocol'] == packets_iot_row_ref['protocol']) & (packets_iot_df['dst_prt'] == packets_iot_row_ref['dst_prt']) ]
-        capdst_row_ref_resp_repeated_df = packets_iot_df[ ( packets_iot_df['dst_ip'] == resolve_hostname(packets_iot_row_ref['src_ip'])[0]) & ( packets_iot_df['dst_prt'] == packets_iot_row_ref['src_prt']) & 
+        capdst_row_ref_resp_repeated_df = packets_iot_df[ ( packets_iot_df['dst_ip'] == packets_iot_row_ref['src_ip']) & ( packets_iot_df['dst_prt'] == packets_iot_row_ref['src_prt']) & 
                                           (packets_iot_df['protocol'] == packets_iot_row_ref['protocol']) & (packets_iot_df['src_prt'] == packets_iot_row_ref['dst_prt']) ]
     
         # mark as processed
@@ -324,7 +324,7 @@ def analyseDeviceIP2(IOTIP,studyFile,device_type='',device_on=True,application_o
     if not packets_iot_df.loc[index_packets_iot,"processed"] and (packets_iot_row_ref['src_ip']==IOTIP or packets_iot_row_ref['src_ip']=="IoT"):
       
       # extract row repeatance from capsrc_df
-      capsrc_row_ref_repeated_df = packets_iot_df[ ( packets_iot_df['src_ip'] == resolve_hostname(packets_iot_row_ref['src_ip'])[0]) & ( packets_iot_df['src_prt'] == packets_iot_row_ref['src_prt']) & 
+      capsrc_row_ref_repeated_df = packets_iot_df[ ( packets_iot_df['src_ip'] == packets_iot_row_ref['src_ip']) & ( packets_iot_df['src_prt'] == packets_iot_row_ref['src_prt']) & 
                                         (packets_iot_df['protocol'] == packets_iot_row_ref['protocol']) & (packets_iot_df['dst_prt'] == packets_iot_row_ref['dst_prt']) ]
    
       # mark as processed
@@ -349,6 +349,15 @@ def analyseDeviceIP2(IOTIP,studyFile,device_type='',device_on=True,application_o
 
   sourceData_df.loc[(sourceData_df["Protocol"] == "EAPOL") & (sourceData_df["No_of_received_packets_per_minutes"] > 8), ["attack","attack type"]] = [1,"deauth"]
   sourceData_df.loc[(sourceData_df["Protocol"] == "XID") & (sourceData_df["No_of_sent_packets_per_minutes"] > 1), ["attack","attack type"]] = [1,"deauth"]
+
+  # syn tcp dos
+  sourceData_df.loc[(sourceData_df["IsServer"] == False) & (sourceData_df["Protocol"] == "TCP") & (sourceData_df["No_of_received_packets_per_minutes"] > 0) & (sourceData_df["No_of_received_packets_per_minutes"] < 25) & (sourceData_df["No_of_sent_packets_per_minutes"] >= 0) & (sourceData_df["No_of_sent_packets_per_minutes"] < 25) & (sourceData_df["Flow_volume"] > 0) & (sourceData_df["Flow_volume"] < 2000) & ((sourceData_df["Send_receive_ratio"] >= .5) | (sourceData_df["Send_receive_ratio"] == -1)) , ["attack","attack type"]] = [1,"dos"]
+
+  #MITM
+  sourceData_df.loc[(sourceData_df["Protocol"] == "ICMP") & (sourceData_df["Flow_volume"] > 62) & (sourceData_df["Send_receive_ratio"] > -1), ["attack","attack type"]] = [1,"MITM"]
+
+  # nmap , port scan
+  sourceData_df.loc[(sourceData_df["Protocol"] == "TCP") & ((sourceData_df["No_of_received_packets_per_minutes"] == 3.32) | (sourceData_df["No_of_sent_packets_per_minutes"] == 3.32)) , ["attack","attack type"]] = [1,"scan"]
 
   if savename=='':
     sourceData_df.to_csv(studyFile+'-In depth packet analysis.csv',index=False)
