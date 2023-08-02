@@ -113,11 +113,9 @@ def pcapng_file_to_dataframe(file_name,iot_ip):
         idy += 1 
     packets_iot.close()
     # print(packets_iot[0])
-    
-    packets_df.to_csv(file_name+'-df.csv', index=False)
 
-    IoT_mac = ""
     # identifying IoT mac
+    IoT_mac = ""
     cap_dst_df = packets_df[packets_df['dst_ip']==iot_ip]
     if len(cap_dst_df) > 0 :
         IoT_mac = cap_dst_df.iloc[0]["dst_mac"]
@@ -130,11 +128,15 @@ def pcapng_file_to_dataframe(file_name,iot_ip):
         packets_df.loc[ (packets_df.dst_ip == "") & (packets_df.dst_mac == IoT_mac), ['src_ip','dst_ip']] = ["Router","IoT"]
         packets_df.loc[ (packets_df.src_ip == "") & (packets_df.src_mac == IoT_mac), ['src_ip','dst_ip']] = ["IoT","Router"]
     
-    packets_df.loc[ packets_df.dst_mac == " ff:ff:ff:ff:ff:ff", 'dst_ip'] = "Broadcast"
-    packets_df.loc[ packets_df.src_mac == " ff:ff:ff:ff:ff:ff", 'src_ip'] = "Broadcast"
+    packets_df.loc[ (packets_df.dst_mac == " ff:ff:ff:ff:ff:ff") & (packets_df.dst_ip == "") , 'dst_ip'] = "Broadcast"
+    packets_df.loc[ (packets_df.src_mac == " ff:ff:ff:ff:ff:ff") & (packets_df.src_ip == "") , 'src_ip'] = "Broadcast"
 
     packets_df.to_csv(file_name+'-df.csv', index=False)
     # print(packets_df)
+
+    # Gate way ip calculation
+    Gateway_ip = ""
+
     return packets_df
 
 
