@@ -15,7 +15,7 @@ def pcapng_file_to_dataframe(file_name,iot_ip):
     
     # packets_iot = pyshark.FileCapture(file_name, display_filter="ip.addr == "+ iot_ip)
     packets_iot = pyshark.FileCapture(file_name)
-    
+    packets_iot.close()
     # numberOf_Packets = len([packet for packet in packets_iot]) # number of packets to device
     # with pd.option_context('display.max_rows', None,
     #                    'display.max_columns', None,
@@ -111,7 +111,7 @@ def pcapng_file_to_dataframe(file_name,iot_ip):
         packets_df.loc[idy] = [src_ip,dst_ip,src_prt,dst_prt,src_mac,dst_mac,protocol,packet_length,data_length,sniff_timestamp,tcp_seq_num,tcp_nxt_seq_num,tcp_ack_num,ttl,tcp_flag]
         # print(packets_df.loc[idy])
         idy += 1 
-    packets_iot.close()
+    
     # print(packets_iot[0])
 
     # identifying IoT mac

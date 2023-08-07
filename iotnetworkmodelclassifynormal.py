@@ -351,13 +351,18 @@ def analyseDeviceIP2(IOTIP,studyFile,device_type='',device_on=True,application_o
   sourceData_df.loc[(sourceData_df["Protocol"] == "XID") & (sourceData_df["No_of_sent_packets_per_minutes"] > 1), ["attack","attack type"]] = [1,"deauth"]
 
   # syn tcp dos
-  sourceData_df.loc[(sourceData_df["IsServer"] == False) & (sourceData_df["Protocol"] == "TCP") & (sourceData_df["No_of_received_packets_per_minutes"] > 0) & (sourceData_df["No_of_received_packets_per_minutes"] < 25) & (sourceData_df["No_of_sent_packets_per_minutes"] >= 0) & (sourceData_df["No_of_sent_packets_per_minutes"] < 25) & (sourceData_df["Flow_volume"] > 0) & (sourceData_df["Flow_volume"] < 2000) & ((sourceData_df["Send_receive_ratio"] >= .5) | (sourceData_df["Send_receive_ratio"] == -1)) , ["attack","attack type"]] = [1,"dos"]
+  sourceData_df.loc[(sourceData_df["IsServer"] == False) & (sourceData_df["Protocol"] == "TCP") & (sourceData_df["No_of_received_packets_per_minutes"] > 0) & (sourceData_df["No_of_received_packets_per_minutes"] < 50) & (sourceData_df["No_of_sent_packets_per_minutes"] >= 0) & (sourceData_df["No_of_sent_packets_per_minutes"] < 25) & (sourceData_df["Flow_volume"] > 0) & (sourceData_df["Flow_volume"] < 5000) & ((sourceData_df["Send_receive_ratio"] >= .5) | (sourceData_df["Send_receive_ratio"] == -1)) , ["attack","attack type"]] = [1,"dos"]
 
   #MITM
   sourceData_df.loc[(sourceData_df["Protocol"] == "ICMP") & (sourceData_df["Flow_volume"] > 62) & (sourceData_df["Send_receive_ratio"] > -1), ["attack","attack type"]] = [1,"MITM"]
 
   # nmap , port scan
   sourceData_df.loc[(sourceData_df["Protocol"] == "TCP") & ((sourceData_df["No_of_received_packets_per_minutes"] == 3.32) | (sourceData_df["No_of_sent_packets_per_minutes"] == 3.32)) , ["attack","attack type"]] = [1,"scan"]
+  sourceData_df.loc[(sourceData_df["Protocol"] == "TCP") & (sourceData_df["No_of_received_packets_per_minutes"] < 10) & (sourceData_df["No_of_sent_packets_per_minutes"] == 0) & (sourceData_df["Flow_volume"] < 300)  , ["attack","attack type"]] = [1,"scan"]
+
+  # UDP flood muliport
+  sourceData_df.loc[(sourceData_df["Protocol"] == "UDP") & (sourceData_df["No_of_sent_packets_per_minutes"] == 0), ["attack","attack type"]] = [1,"UDP flood muliport"]
+
 
   if savename=='':
     sourceData_df.to_csv(studyFile+'-In depth packet analysis.csv',index=False)
@@ -558,7 +563,8 @@ def analyseDeviceIPDualCommunications2(IOTIP,studyFile,device_on=True,applicatio
   # open studyfile and filter for destination IOT IP , neglect other devices on the network
   # cap = pyshark.FileCapture(studyFile, display_filter="ip.addr == "+ IOTIP
   #                               )  
-  cap_df = pcapng_file_to_dataframe(studyFile , IOTIP)                         
+  # cap_df = pd.read_csv(studyFile+"-df.csv") 
+  cap_df = pcapng_file_to_dataframe(studyFile , IOTIP)
   n_Packets_2_device = len(cap_df) # number of packets to device
   package_duration_seconds = cap_df["sniff_timestamp"].iloc[-1] - cap_df["sniff_timestamp"].iloc[0] # capture duration in seconds , last package date - first package date
   package_duration_minutes = package_duration_seconds / 60 # file duration in minutes
