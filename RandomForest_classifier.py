@@ -43,7 +43,6 @@ df= df.loc[: , ["Protocol","No_of_received_packets_per_minutes","No_of_sent_pack
 # features= features.drop('blue_fault', axis = 1)
 
 
-
 # Saving feature names for later use
 feature_list = list(df.columns)
 # print(feature_list)
@@ -69,7 +68,68 @@ unique, counts = np.unique(test_labels, return_counts=True)
 print(unique)
 print(counts)
 
-print("RF \/")
+
+
+exit()
+
+print("ANN --- start")
+# will not work for MITM and deauth with out oversampling 
+import numpy as np
+from keras.utils import to_categorical
+import matplotlib.pyplot as plt
+from imblearn.over_sampling import ADASYN, SMOTE # pip install imbalanced-learn
+sm = SMOTE(k_neighbors=2)
+X_over, y_over = sm.fit_resample(numpy_array, attack_type_labels)
+
+print('Training data shape : ', X_over.shape, y_over.shape)
+print('Testing data shape : ', test_features.shape, test_labels.shape)
+
+classes = np.unique(attack_type_labels)
+nClasses = len(classes)
+print('Total number of outputs : ', nClasses)
+print('Output classes : ', classes)
+
+import tensorflow as tf
+from tensorflow.keras import datasets, layers, models
+import matplotlib.pyplot as plt
+
+model = tf.keras.models.Sequential()
+model.add(tf.keras.layers.Dense(units=100,activation = tf.nn.sigmoid))
+model.add(tf.keras.layers.Dense(units=6,activation = tf.nn.sigmoid))
+
+# model.compile(optimizer = tf.keras.optimizers.RMSprop(), loss =tf.keras.losses.SparseCategoricalCrossentropy(), metrics=['accuracy'])  # 0.986
+model.compile(optimizer = tf.keras.optimizers.Adam(), loss =tf.keras.losses.SparseCategoricalCrossentropy(), metrics=tf.keras.metrics.BinaryAccuracy()) # 0.987
+# model.compile(optimizer = tf.keras.optimizers.Adam(), loss =tf.keras.losses.SparseCategoricalCrossentropy(), metrics=tf.keras.metrics.BinaryAccuracy()) # 0.983  30 epochs , .98 100
+# model.compile(optimizer = tf.keras.optimizers.Adam(), loss =tf.keras.losses.SparseCategoricalCrossentropy(), metrics=tf.keras.metrics.BinaryAccuracy()) # 
+# model.compile(optimizer = tf.keras.optimizers.Adamax(), loss =tf.keras.losses.SparseCategoricalCrossentropy(), metrics=['accuracy']) # .982
+# model.compile(optimizer = tf.keras.optimizers.Adadelta(), loss =tf.keras.losses.SparseCategoricalCrossentropy(), metrics=['accuracy']) # .544
+# model.compile(optimizer = tf.keras.optimizers.Adagrad(), loss =tf.keras.losses.SparseCategoricalCrossentropy(), metrics=['accuracy']) # .842
+# model.compile(optimizer = tf.keras.optimizers.Adagrad(), loss =tf.keras.losses.SparseCategoricalCrossentropy(), metrics=['accuracy']) # 
+print("training ")
+model.fit(X_over, y_over, epochs=200,verbose=0) # 200
+predictions_array = model.predict(test_features)
+predictions = np.argmax(predictions_array, axis=1).astype(int)
+print(predictions)
+result = confusion_matrix(test_labels, predictions)
+print(result)
+
+errors = abs(predictions - test_labels)
+# Print out the mean absolute error (mae)
+print('ANN Mean Absolute Error:', np.mean(errors), '%.')
+print("ANN Accuracy:",metrics.accuracy_score(test_labels, predictions))
+print("ANN Precision:",metrics.precision_score(test_labels, predictions,average='micro'))
+print("ANN Recall:",metrics.recall_score(test_labels, predictions,average='micro'))
+
+print("ANN ---- end")
+
+
+
+print("")
+print("")
+print("")
+
+
+print("RF --- start")
 # Import the model we are using
 from sklearn.ensemble import RandomForestClassifier
 # Instantiate model with 1000 decision trees
@@ -96,7 +156,7 @@ print(conf_mat)
 
 print(le_attack_type.classes_)
 
-print("RF ^")
+print("RF --- end")
 
 
 print("")
@@ -105,7 +165,7 @@ print("")
 
 
 
-print("KNN \/")
+print("KNN --- start")
 from sklearn.neighbors import KNeighborsClassifier
 number_classes = len(le_attack_type.classes_)
 knn = KNeighborsClassifier(n_neighbors=number_classes,weights="distance",leaf_size=100) # weights="distance" very importanct as data is impalanced
@@ -119,7 +179,7 @@ print("KNN Accuracy:",metrics.accuracy_score(test_labels, predictions))
 print("KNN Precision:",metrics.precision_score(test_labels, predictions,average='micro'))
 print("KNN Recall:",metrics.recall_score(test_labels, predictions,average='micro'))
 
-print("KNN ^")
+print("KNN --- end")
 
 # exit()
 
@@ -128,7 +188,7 @@ print("")
 print("")
 
 
-print("SVM \/")
+print("SVM --- start")
 
 #Import svm model
 
@@ -160,8 +220,11 @@ print(conf_mat)
 print("SVM Accuracy:",metrics.accuracy_score(test_labels, y_pred))
 print("SVM Precision:",metrics.precision_score(test_labels, y_pred,average='micro'))
 print("SVM Recall:",metrics.recall_score(test_labels, y_pred,average='micro'))
-print("RF ^")
 
+print("RF --- end")
 
+print("")
+print("")
+print("")
 
 
