@@ -10,7 +10,7 @@ def resolve_mac(ip):
 
 
 def pcapng_file_to_dataframe(file_name,iot_ip):
-    columns_names = ["src_ip","dst_ip","src_prt","dst_prt","src_mac","dst_mac","protocol","packet_length","data_length","sniff_timestamp","tcp_seq_num","tcp_nxt_seq_num","tcp_ack_num","ttl","tcp_flag"]
+    columns_names = ["src_ip","dst_ip","src_prt","dst_prt","src_mac","dst_mac","protocol","packet_length","data_length","sniff_timestamp","tcp_seq_num","tcp_nxt_seq_num","tcp_ack_num","ttl","tcp_flag","status"]
     packets_df = pd.DataFrame(columns=columns_names) 
     
     # packets_iot = pyshark.FileCapture(file_name, display_filter="ip.addr == "+ iot_ip)
@@ -39,6 +39,7 @@ def pcapng_file_to_dataframe(file_name,iot_ip):
         tcp_ack_num = -1
         ttl = -1
         tcp_flag = ""
+        status =""
         # if packet_length == 542:
         # print("time :  id : packet :" , sniff_timestamp ,  idy+1 , packet)
 
@@ -85,8 +86,10 @@ def pcapng_file_to_dataframe(file_name,iot_ip):
                 if splits[0] == "\tTotal Length":
                     data_length = int(splits[1].split(" ")[1])                
                 if splits[0] == "\tFlags":
-                    tcp_flag = int(splits[1].split(" ")[1].split("x")[1])
-                
+                    tcp_flag = splits[1].replace(",","").split(" ")[1].split("x")[1]       
+                if splits[0] == "\tStatus" or splits[0] == "\tStatus Code":
+                    status = splits[1].split(" ")[1]       
+                                  
                         
         # print(packet_length)
         # print(data_length)
@@ -108,7 +111,7 @@ def pcapng_file_to_dataframe(file_name,iot_ip):
 
         # if dst_ip == "":
             
-        packets_df.loc[idy] = [src_ip,dst_ip,src_prt,dst_prt,src_mac,dst_mac,protocol,packet_length,data_length,sniff_timestamp,tcp_seq_num,tcp_nxt_seq_num,tcp_ack_num,ttl,tcp_flag]
+        packets_df.loc[idy] = [src_ip,dst_ip,src_prt,dst_prt,src_mac,dst_mac,protocol,packet_length,data_length,sniff_timestamp,tcp_seq_num,tcp_nxt_seq_num,tcp_ack_num,ttl,tcp_flag,status]
         # print(packets_df.loc[idy])
         idy += 1 
     

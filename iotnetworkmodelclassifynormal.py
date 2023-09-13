@@ -167,7 +167,7 @@ def analyseDeviceIP2(IOTIP,studyFile,device_type='',device_on=True,application_o
   , "Dest_ip_avg_packet_length" ,"Src_ip_avg_packet_length","Flow_rate","IsServer","Max_dest_SSL_payload","Min_dest_SSL_payload","Avg_dest_SSL_payload","Std_dest_SSL_payload","Max_IoT_SSL_payload","Min_IoT_SSL_payload"
                   ,"Avg_IoT_SSL_payload","Std_IoT_SSL_payload"
                   # ,"IP flags to IOT","IP flags from IOT"
-                  ,"Dest_TCP_Flags","IoT_TCP_Flags"
+                  ,"Dest_TCP_Flags","IoT_TCP_Flags","IOT_Respond_401"
                   ,"attack","attack type", "device type"
                   ]
   # print('Output is',column_names)
@@ -300,6 +300,8 @@ def analyseDeviceIP2(IOTIP,studyFile,device_type='',device_on=True,application_o
 
         flowrate =  (bytes_IOT_Received_from_IP_PacketsSize + bytes_IOT_Sent_to_IP_PacketsSize) / package_duration_minutes
 
+        IOT_Respond_401 = len(capdst_row_ref_resp_repeated_df[(capdst_row_ref_resp_repeated_df['status']=="401")])
+
         sourceData_df.loc[len(sourceData_df)] = [resolve_hostname(packets_iot_row_ref["src_ip"])[0] , packets_iot_row_ref["src_prt"]  , packets_iot_row_ref["dst_prt"], packets_iot_row_ref["protocol"], 
                                   receiveSend_RatioIP,NumOfPackets_IOT_Received_from_IP_per_min,NumOfPackets_IOT_Sent_to_IP_per_min,avgTTL,
                                   bytes_IOT_Received_from_IP_PacketsSize + bytes_IOT_Sent_to_IP_PacketsSize,
@@ -310,7 +312,7 @@ def analyseDeviceIP2(IOTIP,studyFile,device_type='',device_on=True,application_o
                                   TLS_length_max_Recieved_at_IOT,TLS_length_min_Recieved_at_IOT,TLS_length_avg_Recieved_at_IOT,TLS_length_std_Recieved_at_IOT,
                                   TLS_length_max_Sent_From_IOT,TLS_length_min_Sent_From_IOT,TLS_length_avg_Sent_From_IOT,TLS_length_std_Sent_From_IOT,
                                   # IP_flag_to_IOT,IP_flag_from_IOT,
-                                  IP_flag_to_IOT,IP_flag_from_IOT,
+                                  IP_flag_to_IOT,IP_flag_from_IOT,IOT_Respond_401,
                                   0,0,device_type
                                   ] # add pattern to sourceData
           # store values in the xlsx rows
@@ -342,7 +344,7 @@ def analyseDeviceIP2(IOTIP,studyFile,device_type='',device_on=True,application_o
                                   0,0,0,0,
                                   0,0,0,0,
                                   # IP_flag_to_IOT,IP_flag_from_IOT,
-                                  0,0,
+                                  0,0,0,
                                   0,0,device_type
                                   ] # add pattern to sourceData
 
@@ -363,6 +365,11 @@ def analyseDeviceIP2(IOTIP,studyFile,device_type='',device_on=True,application_o
   # UDP flood muliport
   sourceData_df.loc[(sourceData_df["Protocol"] == "UDP") & (sourceData_df["No_of_sent_packets_per_minutes"] == 0), ["attack","attack type"]] = [1,"UDP flood muliport"]
 
+  # web TCP 80 password wrong
+  sourceData_df.loc[(sourceData_df["IOT_Respond_401"] > 0) & (sourceData_df["Protocol"] == "TCP") & (sourceData_df["IoT_port_no"] == 80) , ["attack","attack type"]] = [1,"browser_password"]
+
+  # web rtsp 554 password wrong
+  sourceData_df.loc[(sourceData_df["IOT_Respond_401"] > 0) & (sourceData_df["Protocol"] == "TCP") & (sourceData_df["IoT_port_no"] == 554) , ["attack","attack type"]] = [1,"rtsp_password"]
 
   if savename=='':
     sourceData_df.to_csv(studyFile+'-In depth packet analysis.csv',index=False)
@@ -582,90 +589,93 @@ def analyseDeviceIPDualCommunications2(IOTIP,studyFile,device_on=True,applicatio
   dualComm = []
   dualComm_df =  pd.DataFrame(columns = column_names)
   
-  packets=[]
-  for cap_df_index , cap_df_packet in cap_df.iterrows(): # looping on packets in pcabng file      
-     
-   
-    flag_req = cap_df_packet['tcp_flag']
-    tcp_seq_num_req = cap_df_packet['tcp_seq_num']
-    tcp_nxt_seq_num_req = cap_df_packet['tcp_nxt_seq_num']
-    tcp_ack_num_req = cap_df_packet['tcp_ack_num']
+  # packets=[]
+  cap_tcp_df = cap_df.loc[cap_df['protocol']=="TCP"].reset_index()
+  # print(cap_tcp_df)
+  # for cap_df_index , cap_df_packet in cap_df.iterrows(): # looping on packets in pcapng file      
 
-        
-    packets.append([resolve_hostname(cap_df_packet['src_ip'])[0] , cap_df_packet['src_prt'] , resolve_hostname(cap_df_packet['dst_ip'])[0], cap_df_packet['dst_prt'], cap_df_packet['protocol'],tcp_nxt_seq_num_req])
+  #   flag_req = cap_df_packet['tcp_flag']
+  #   tcp_seq_num_req = cap_df_packet['tcp_seq_num']
+  #   tcp_nxt_seq_num_req = cap_df_packet['tcp_nxt_seq_num']
+  #   tcp_ack_num_req = cap_df_packet['tcp_ack_num']
+  #   if cap_df["protocol"].iloc[cap_df_index] == "TCP":
+  #     print("hi")
+  #     packets.append([resolve_hostname(cap_df_packet['src_ip'])[0] , cap_df_packet['src_prt'] , resolve_hostname(cap_df_packet['dst_ip'])[0], cap_df_packet['dst_prt'], cap_df_packet['protocol'],tcp_nxt_seq_num_req])
 
   uniqueCount=0
   cap_count = -1
   c=1
-  for cap_df_index , cap_df_packet in cap_df.iterrows(): # looping on packets in pcabng file
-    cap_count += 1
+  for cap_tcp_index , cap_tcp_row in cap_tcp_df.iterrows(): # looping on TCP packets in pcapng file
+    # cap_count += 1
     # bar update , if uncommented ofcorse
     # bar.update(c)
-    c+=1
+    # c+=1
     # print(packet.layers)
     # only 100 packet if uncommneted
     # if c>50:      
     #  break    
     # print(c , " of " , n_Packets_2_device , " for file 2")
     
-    if (IOTIP.split(".")[:-1] != cap_df_packet['src_ip'].split(".")[:-1]) or True: # excluding local connections (if remove or true) , we are not excluding because we are attacking from access point
-      
+    if True: # excluding local connections (if remove or true) , we are not excluding because we are attacking from access point      
       reqonly = True
-      flag_req = cap_df_packet['tcp_flag']
-      tcp_seq_num_req = cap_df_packet['tcp_seq_num']
-      tcp_nxt_seq_num_req = cap_df_packet['tcp_nxt_seq_num']
-      tcp_ack_num_req = cap_df_packet['tcp_ack_num']
-        
-      req_time = cap_df_packet['sniff_timestamp']
-      length_req = cap_df_packet['packet_length']
-      ttl_req = cap_df_packet['ttl']
-
-      reqPayload = cap_df_packet['data_length']
+      flag_req = cap_tcp_row['tcp_flag']
+      # tcp_seq_num_req = cap_tcp_row['tcp_seq_num']
+      # tcp_nxt_seq_num_req = cap_tcp_row['tcp_nxt_seq_num']
+      tcp_ack_num_req = cap_tcp_row['tcp_ack_num']        
+      # print("tcp_ack_num_req",tcp_ack_num_req)
+      req_time = cap_tcp_row['sniff_timestamp']
+      length_req = cap_tcp_row['packet_length']
+      ttl_req = cap_tcp_row['ttl']
+      reqPayload = cap_tcp_row['data_length']
           
       # print(packet.layers[2])
       # looping on the next packets for response
-      for aftercount in range (cap_df_index,len(cap_df)): 
-        if "TCP" == cap_df.loc[aftercount,"protocol"] and cap_df_packet['src_ip'] == cap_df.loc[aftercount,'dst_ip'] and cap_df_packet['dst_ip'] == cap_df.loc[aftercount,'src_ip'] and cap_df_packet['protocol'] == cap_df.loc[aftercount,'protocol']:
-          tcp_nxt_seq_num_res_aftercount = cap_df.loc[aftercount,'tcp_nxt_seq_num']
+      for aftercount in range(cap_tcp_index,len(cap_tcp_df)): 
+        # print("hi",aftercount,cap_tcp_index,len(cap_tcp_df))
+        
+        if cap_tcp_row['src_ip'] == cap_tcp_df.loc[int(aftercount),'dst_ip'] and cap_tcp_row['dst_ip'] == cap_tcp_df.loc[int(aftercount),'src_ip']:
+          tcp_nxt_seq_num_res_aftercount = cap_tcp_df.loc[aftercount,'tcp_nxt_seq_num']
           if tcp_nxt_seq_num_res_aftercount == tcp_ack_num_req:
+            # print("tcp_nxt_seq_num_res_aftercount",tcp_nxt_seq_num_res_aftercount)
             reqonly = False
-            flag_res = cap_df_packet['tcp_flag']
-            tcp_seq_num_res = cap_df_packet['tcp_seq_num']
-            tcp_nxt_seq_num_res = cap_df_packet['tcp_nxt_seq_num']
-            tcp_ack_num_res = cap_df_packet['tcp_ack_num']
+            flag_res = cap_tcp_df.loc[aftercount,'tcp_flag']
+            # tcp_seq_num_res = cap_tcp_df.loc[aftercount,'tcp_seq_num']
+            # tcp_nxt_seq_num_res = cap_tcp_df.loc[aftercount,'tcp_nxt_seq_num']
+            # tcp_ack_num_res = cap_tcp_df.loc[aftercount,'tcp_ack_num']
                 
-            res_time = cap_df.loc[aftercount,'sniff_timestamp']
+            res_time = cap_tcp_df.loc[aftercount,'sniff_timestamp']
             req_res_time = float(res_time) - float(req_time)
 
-            length_res = cap_df.loc[aftercount,'packet_length']
-            ttl_res = cap_df.loc[aftercount,'ttl']
-            resPayload = cap_df.loc[aftercount,'data_length']
+            length_res = cap_tcp_df.loc[aftercount,'packet_length']
+            ttl_res = cap_tcp_df.loc[aftercount,'ttl']
+            resPayload = cap_tcp_df.loc[aftercount,'data_length']
          
+            break
+          if cap_tcp_index - aftercount > 50:
             break
       
       # print(flag_req)
-      if flag_req == 18 and not reqonly :
-        # print(flag_req)
+      if flag_req == '018' and not reqonly :
         
-        if [cap_df_packet['src_ip'] , cap_df_packet['src_prt'] , cap_df_packet['dst_ip'] , cap_df_packet['dst_prt'] , cap_df_packet['protocol'] , flag_req , flag_res , length_req , length_res , reqPayload , resPayload , ttl_req , ttl_res] not in dualComm_unique:
+        if [cap_tcp_row['src_ip'] , cap_tcp_row['src_prt'] , cap_tcp_row['dst_ip'] , cap_tcp_row['dst_prt'] , cap_tcp_row['protocol'] , flag_req , flag_res , length_req , length_res , reqPayload , resPayload , ttl_req , ttl_res] not in dualComm_unique:
           # dualComm_unique_df.loc[uniqueCount] = [resolve_hostname(packet.ip.src)[0] , srcport , resolve_hostname(packet.ip.dst)[0], dstport, packet.transport_layer]
-          dualComm_unique.append([cap_df_packet['src_ip'] , cap_df_packet['src_prt'] , cap_df_packet['dst_ip'] , cap_df_packet['dst_prt'] , cap_df_packet['protocol'], flag_req , flag_res , length_req , length_res , reqPayload , resPayload , ttl_req , ttl_res])
+          dualComm_unique.append([cap_tcp_row['src_ip'] , cap_tcp_row['src_prt'] , cap_tcp_row['dst_ip'] , cap_tcp_row['dst_prt'] , cap_tcp_row['protocol'], flag_req , flag_res , length_req , length_res , reqPayload , resPayload , ttl_req , ttl_res])
           if req_res_time != -1:
             dualComm_unique_column_list_time_res_min.append(req_res_time)
             dualComm_unique_column_list_time_res_max.append(req_res_time)
             dualComm_unique_column_list_time_res_sum.append(req_res_time)
             dualComm_unique_column_list_repeatance.append(1)
-            dualComm_unique_column_list_repeatance_starttime.append(cap_df_packet['sniff_timestamp'])
-            dualComm_unique_column_list_repeatance_endtime.append(cap_df_packet['sniff_timestamp'])
+            dualComm_unique_column_list_repeatance_starttime.append(cap_tcp_row['sniff_timestamp'])
+            dualComm_unique_column_list_repeatance_endtime.append(cap_tcp_row['sniff_timestamp'])
                 # print(cap_count)
                 # print(aftercount)
 
           # dualComm.append([packet.sniff_timestamp, resolve_hostname(packet.ip.src)[0] , srcport , resolve_hostname(packet.ip.dst)[0], dstport, packet.transport_layer,flag_req,tcp_seq_num_req,tcp_nxt_seq_num_req,tcp_ack_num_req])
           
         else:
-          row_repeated = dualComm_unique.index([cap_df_packet['src_ip'] , cap_df_packet['src_prt'] , cap_df_packet['dst_ip'] , cap_df_packet['dst_prt'] , cap_df_packet['protocol'], flag_req , flag_res , length_req , length_res , reqPayload , resPayload , ttl_req , ttl_res])
+          row_repeated = dualComm_unique.index([cap_tcp_row['src_ip'] , cap_tcp_row['src_prt'] , cap_tcp_row['dst_ip'] , cap_tcp_row['dst_prt'] , cap_tcp_row['protocol'], flag_req , flag_res , length_req , length_res , reqPayload , resPayload , ttl_req , ttl_res])
           # print()
-          dualComm_unique_column_list_repeatance_endtime[row_repeated] = float(cap_df_packet['sniff_timestamp'])
+          dualComm_unique_column_list_repeatance_endtime[row_repeated] = float(cap_tcp_row['sniff_timestamp'])
           if req_res_time != -1:
             if req_res_time < dualComm_unique_column_list_time_res_min[row_repeated]:
               dualComm_unique_column_list_time_res_min[row_repeated] = req_res_time
@@ -727,7 +737,7 @@ def analyseDeviceIPDualCommunications2(IOTIP,studyFile,device_on=True,applicatio
   # worksheet.write(idy, 0,resolve_hostname(packet.ip.src)[0])
   # workbook.close()
   print(dualComm_df)
-  return packets,dualComm_unique,dualComm_df
+  return None,dualComm_unique,dualComm_df
 
 # print("\nData for cam no app idle")
 # IOTIP = "10.42.0.107" #  
