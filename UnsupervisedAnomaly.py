@@ -58,7 +58,7 @@ np_Malignant_important = np.array(df_Malignant_important)
 
 print("Angle-Based Outlier Detection Start") # very slow
 
-abod_model = ABOD(method="default",n_neighbors=2,contamination=.4)
+abod_model = ABOD(method="fast",n_neighbors=4,contamination=.1)
 # (method="default",n_neighbors=2,5,10)
 # TP =  15
 # TN =  12626
@@ -76,6 +76,12 @@ abod_model = ABOD(method="default",n_neighbors=2,contamination=.4)
 # FP =  103
 # FN =  1786
 # Angle-Based Outlier Detection Accuracy:  85.21330724070451 %
+# method="default",n_neighbors=2,contamination=.4
+# TP =  59
+# TN =  7
+# FP =  89
+# FN =  12620
+# Angle-Based Outlier Detection Accuracy:  0.5166340508806262 %
 abod_model.fit(np_Benign_important)
 is_inlier_Benign = abod_model.predict(np_Benign_important)
 is_inlier_Malignant = abod_model.predict(np_Malignant_important)
