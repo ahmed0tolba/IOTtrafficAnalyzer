@@ -10,7 +10,7 @@ def resolve_mac(ip):
 
 
 def pcapng_file_to_dataframe(file_name,iot_ip):
-    columns_names = ["src_ip","dst_ip","src_prt","dst_prt","src_mac","dst_mac","protocol","packet_length","data_length","sniff_timestamp","tcp_seq_num","tcp_nxt_seq_num","tcp_ack_num","ttl","tcp_flag","status"]
+    columns_names = ["src_ip","dst_ip","src_prt","dst_prt","src_mac","dst_mac","protocol","packet_length","data_length","sniff_timestamp","tcp_seq_num_raw","tcp_seq_num","tcp_nxt_seq_num","tcp_ack_num","tcp_ack_num_raw","ttl","tcp_flag","status"]
     packets_df = pd.DataFrame(columns=columns_names) 
     
     # packets_iot = pyshark.FileCapture(file_name, display_filter="ip.addr == "+ iot_ip)
@@ -24,6 +24,7 @@ def pcapng_file_to_dataframe(file_name,iot_ip):
     #     print("packets_iot" , packets_iot)
     idy = 0
     for packet in packets_iot:
+        # print(packet)        
         packet_length = int(packet.length)
         data_length = -1
         sniff_timestamp = float(packet.sniff_timestamp)
@@ -34,9 +35,11 @@ def pcapng_file_to_dataframe(file_name,iot_ip):
         src_prt = -1
         dst_prt = -1
         protocol = ""
+        tcp_seq_num_raw = -1
         tcp_seq_num = -1
         tcp_nxt_seq_num = -1
         tcp_ack_num = -1
+        tcp_ack_num_raw = -1
         ttl = -1
         tcp_flag = ""
         status =""
@@ -75,12 +78,16 @@ def pcapng_file_to_dataframe(file_name,iot_ip):
                     src_prt = int(splits[1].split("'")[0])
                 if splits[0] == "\tDestination Port":
                     dst_prt = int(splits[1].split("'")[0])
+                if splits[0] == "\tSequence Number (raw)":
+                    tcp_seq_num_raw = int(splits[1].split(" ")[1])
                 if splits[0] == "\tSequence Number":
                     tcp_seq_num = int(splits[1].split(" ")[1])
                 if splits[0] == "\tNext Sequence Number":
                     tcp_nxt_seq_num = int(splits[1].split(" ")[1])
                 if splits[0] == "\tAcknowledgment Number":
                     tcp_ack_num = int(splits[1].split(" ")[1])
+                if splits[0] == "\tAcknowledgment number (raw)":
+                    tcp_ack_num_raw = int(splits[1].split(" ")[1])
                 if splits[0] == "\tTime to Live":
                     ttl = int(splits[1].split(" ")[1])
                 if splits[0] == "\tTotal Length":
@@ -91,7 +98,7 @@ def pcapng_file_to_dataframe(file_name,iot_ip):
                     status = splits[1].split(" ")[1]       
                                   
                         
-        # print(packet_length)
+        # print(packet)
         # print(data_length)
         # print(sniff_timestamp)        
         # print(dst_mac)
@@ -111,7 +118,7 @@ def pcapng_file_to_dataframe(file_name,iot_ip):
 
         # if dst_ip == "":
             
-        packets_df.loc[idy] = [src_ip,dst_ip,src_prt,dst_prt,src_mac,dst_mac,protocol,packet_length,data_length,sniff_timestamp,tcp_seq_num,tcp_nxt_seq_num,tcp_ack_num,ttl,tcp_flag,status]
+        packets_df.loc[idy] = [src_ip,dst_ip,src_prt,dst_prt,src_mac,dst_mac,protocol,packet_length,data_length,sniff_timestamp,tcp_seq_num_raw,tcp_seq_num,tcp_nxt_seq_num,tcp_ack_num,tcp_ack_num_raw,ttl,tcp_flag,status]
         # print(packets_df.loc[idy])
         idy += 1 
     
